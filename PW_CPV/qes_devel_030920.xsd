@@ -263,30 +263,30 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
   </complexType>
   <simpleType name="functionalType">
     <restriction base="string">
-    <enumeration value="PZ"/>
-    <enumeration value="BP"/>
-    <enumeration value="PBE"/>
-    <enumeration value="REVPBE"/>
-    <enumeration value="PBESOL"/>
-    <enumeration value="BLYP"/>
-    <enumeration value="OLYP"/>
-    <enumeration value="PW91"/>
-    <enumeration value="WC"/>
-    <enumeration value="SOGGA"/>
-    <enumeration value="EV93"/>
-    <enumeration value="B3LYP"/>
-    <enumeration value="GauPBE"/>
-    <enumeration value="PBE0"/>
-    <enumeration value="HSE"/>
-    <enumeration value="VDW-DF"/>
-    <enumeration value="VDW-DF-CX"/>
-    <enumeration value="VDW-DF-C09"/>
-    <enumeration value="VDW-DF-OB86"/>
-    <enumeration value="VDW-DF-OBK8"/>
-    <enumeration value="VDW-DF2"/>
-    <enumeration value="VDW-DF2-C09"/>
-    <enumeration value="VDW-DF2-B86R"/>
-    <enumeration value="RVV10"/>
+    <enumeration pattern="[pP][zZ]"/>
+    <enumeration pattern="[bB][pP]"/>
+    <enumeration pattern="[pP][bB][eE]"/>
+    <enumeration pattern="[rR][rE][vV][pP][bB][eE]"/>
+    <enumeration pattern="[pP][bB][eE][sS][oO][lL]"/>
+    <enumeration pattern="[bB][lL][yY][pP]"/>
+    <enumeration pattern="[oO][lL][yY][pP]"/>
+    <enumeration pattern="[pP][wW]91"/>
+    <enumeration pattern="[wW][cC]"/>
+    <enumeration pattern="[sS][oO][gG][gG][aA]"/>
+    <enumeration pattern="[eE][vV]93"/>
+    <enumeration pattern="[bB]3[lL][yY][pP]"/>
+    <enumeration pattern="[gG][aA][uU][pP][bB][eE]"/>
+    <enumeration pattern="[pP][bB][eE]0"/>
+    <enumeration pattern="[hH][sS][eE]"/>
+    <enumeration pattern="[vV][dD][wW]-[dD][fF]"/>
+    <enumeration pattern="[vV][dD][wW]-[dD][fF]-CX"/>
+    <enumeration pattern="[vV][dD][wW]-[dD][fF]-[cC]09"/>
+    <enumeration pattern="[vV][dD][wW]-[dD][fF]-[oO][bB]86"/>
+    <enumeration pattern="[vV][dD][wW]-[dD][fF]-[oO][bB][kK]8"/>
+    <enumeration pattern="[vV][dD][wW]-[dD][fF]2"/>
+    <enumeration pattern="[vV][dD][wW]-[dD][fF]2-[cC]09"/>
+    <enumeration pattern="[vV][dD][wW]-[dD][fF]2-[bB]86[rR]"/>
+    <enumeration pattern="[rR][vV][vV]10"/>
     </restriction>
   </simpleType>
 
