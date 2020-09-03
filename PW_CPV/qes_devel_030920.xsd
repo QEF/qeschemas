@@ -263,30 +263,30 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
   </complexType>
   <simpleType name="functionalType">
     <restriction base="string">
-    <enumeration pattern="[pP][zZ]"/>
-    <enumeration pattern="[bB][pP]"/>
-    <enumeration pattern="[pP][bB][eE]"/>
-    <enumeration pattern="[rR][rE][vV][pP][bB][eE]"/>
-    <enumeration pattern="[pP][bB][eE][sS][oO][lL]"/>
-    <enumeration pattern="[bB][lL][yY][pP]"/>
-    <enumeration pattern="[oO][lL][yY][pP]"/>
-    <enumeration pattern="[pP][wW]91"/>
-    <enumeration pattern="[wW][cC]"/>
-    <enumeration pattern="[sS][oO][gG][gG][aA]"/>
-    <enumeration pattern="[eE][vV]93"/>
-    <enumeration pattern="[bB]3[lL][yY][pP]"/>
-    <enumeration pattern="[gG][aA][uU][pP][bB][eE]"/>
-    <enumeration pattern="[pP][bB][eE]0"/>
-    <enumeration pattern="[hH][sS][eE]"/>
-    <enumeration pattern="[vV][dD][wW]-[dD][fF]"/>
-    <enumeration pattern="[vV][dD][wW]-[dD][fF]-CX"/>
-    <enumeration pattern="[vV][dD][wW]-[dD][fF]-[cC]09"/>
-    <enumeration pattern="[vV][dD][wW]-[dD][fF]-[oO][bB]86"/>
-    <enumeration pattern="[vV][dD][wW]-[dD][fF]-[oO][bB][kK]8"/>
-    <enumeration pattern="[vV][dD][wW]-[dD][fF]2"/>
-    <enumeration pattern="[vV][dD][wW]-[dD][fF]2-[cC]09"/>
-    <enumeration pattern="[vV][dD][wW]-[dD][fF]2-[bB]86[rR]"/>
-    <enumeration pattern="[rR][vV][vV]10"/>
+    <pattern value="[pP][zZ]"/>
+    <pattern value="[bB][pP]"/>
+    <pattern value="[pP][bB][eE]"/>
+    <pattern value="[rR][rE][vV][pP][bB][eE]"/>
+    <pattern value="[pP][bB][eE][sS][oO][lL]"/>
+    <pattern value="[bB][lL][yY][pP]"/>
+    <pattern value="[oO][lL][yY][pP]"/>
+    <pattern value="[pP][wW]91"/>
+    <pattern value="[wW][cC]"/>
+    <pattern value="[sS][oO][gG][gG][aA]"/>
+    <pattern value="[eE][vV]93"/>
+    <pattern value="[bB]3[lL][yY][pP]"/>
+    <pattern value="[gG][aA][uU][pP][bB][eE]"/>
+    <pattern value="[pP][bB][eE]0"/>
+    <pattern value="[hH][sS][eE]"/>
+    <pattern value="[vV][dD][wW]-[dD][fF]"/>
+    <pattern value="[vV][dD][wW]-[dD][fF]-CX"/>
+    <pattern value="[vV][dD][wW]-[dD][fF]-[cC]09"/>
+    <pattern value="[vV][dD][wW]-[dD][fF]-[oO][bB]86"/>
+    <pattern value="[vV][dD][wW]-[dD][fF]-[oO][bB][kK]8"/>
+    <pattern value="[vV][dD][wW]-[dD][fF]2"/>
+    <pattern value="[vV][dD][wW]-[dD][fF]2-[cC]09"/>
+    <pattern value="[vV][dD][wW]-[dD][fF]2-[bB]86[rR]"/>
+    <pattern value="[rR][vV][vV]10"/>
     </restriction>
   </simpleType>
 
