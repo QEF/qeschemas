@@ -867,7 +867,7 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
       <element type="boolean" name="spinorbit"/>
       <element type="double"  name="total"/>
       <element type="double"  name="absolute"/>
-      <element type="boolean" name="do_magnetization" minOcccurs="0"/>
+      <element type="boolean" name="do_magnetization" minOccurs="0"/>
     </sequence>
   </complexType>
   <complexType name="total_energyType">
