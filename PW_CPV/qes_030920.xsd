@@ -287,6 +287,12 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
     <pattern value="[vV][dD][wW]-[dD][fF]2-[cC]09"/>
     <pattern value="[vV][dD][wW]-[dD][fF]2-[bB]86[rR]"/>
     <pattern value="[rR][vV][vV]10"/>
+    <pattern value=".*[xX][cC]_[lL][Dd][Aa]_[xX][cC]?_.*"/>
+    <pattern value=".*[xX][cC]_[mM]?[gG][Gg][Aa]_[xX][cC]?_.*"/>
+    <pattern value=".*[xX][cC]_[hH][yY][bB]_[mM]?[gG][Gg][Aa]_[xX][cC]?_.*"/>
+    <pattern value=".*[xX][cC]_[lL][Dd][Aa]_[cC]_.*"/>
+    <pattern value=".*[xX][cC]_[mM]?[gG][Gg][Aa]_[kKcC]_.*"/>
+    <pattern value=".*[xX][cC]_[hH][yY][bB]_[mM]?[gG][Gg][Aa]_[kKcC]?_.*"/>
     </restriction>
   </simpleType>
 
