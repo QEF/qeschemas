@@ -463,7 +463,7 @@
 <complexType name="gipawType">
     <sequence>
         <element minOccurs="1" maxOccurs="1" name="number_of_core_orbitals" type="nonNegativeInteger"/>
-        <element minOccurs="1" maxOccurs="1" name="number_of_valence_orbitals" type="nonNegativeInteger"/>
+        <element minOccurs="0" maxOccurs="1" name="number_of_valence_orbitals" type="nonNegativeInteger"/>
         <element minOccurs="0" maxOccurs="unbounded" name="pp_gipaw_core_orbital" type="qe_pp:chiType"/>
         <element minOccurs="0" maxOccurs="unbounded" name="pp_gipaw_orbital" type="qe_pp:gipawOrbitalType"/>
         <element name="pp_gipaw_vlocal" type ="qe_pp:gipawVlocType"/>
