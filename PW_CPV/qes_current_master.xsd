@@ -5,7 +5,7 @@ This file is distributed under the terms of the MIT License. See the
 file 'LICENSE' in the root directory of the present distribution, or
 http://opensource.org/licenses/MIT.
 Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
-datecode 200903 
+datecode 210716
 -->
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
 	xmlns:qes="http://www.quantum-espresso.org/ns/qes/qes-1.0"
