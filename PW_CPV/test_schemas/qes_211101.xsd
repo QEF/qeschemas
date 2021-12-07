@@ -16,7 +16,7 @@ datecode 211101
     <sequence>
       <element type="qes:general_infoType" name="general_info" minOccurs="0" />
       <element type="qes:parallel_infoType" name="parallel_info" minOccurs="0" />
-      <element type="qes:inputType" name="input" />
+      <element type="qes:inputType" name="input" minOccurs="0"/>
       <element type="qes:stepType" name="step" minOccurs="0" maxOccurs="unbounded" />
       <element type="qes:outputType" name="output" minOccurs="0" />
       <element type="qes:cpstatusType" name="STATUS" minOccurs="0"/>
@@ -293,6 +293,7 @@ datecode 211101
     <pattern value="[bB][eE][eE][fF]"/>
     <pattern value="[sS][Cc][Aa][nN]"/> 
     <pattern value="[rR]2[sS][cC][aA][nN]"/> 
+    <pattern value="[A-Z]{2,4}\p{Zs}{1,3}[A-Z]{1,4}\p{Zs}{1,3}[A-Z]{1,4}\p{Zs}{1,4}[A-Z]{1,4}"/>
     <pattern value=".*[xX][cC]_[lL][Dd][Aa]_[xX][cC]?_.*"/>
     <pattern value=".*[xX][cC]_[mM]?[gG][Gg][Aa]_[xX][cC]?_.*"/>
     <pattern value=".*[xX][cC]_[hH][yY][bB]_[mM]?[gG][Gg][Aa]_[xX][cC]?_.*"/>
@@ -638,16 +639,16 @@ datecode 211101
   </complexType>
   <simpleType name="celldofreeType">
     <restriction base="string">
-      <enumeration value="all"/>
-      <enumeration value="ibrav"/>
-      <pattern value="(ibrav+){0,1}[xyz]"/>
-      <pattern value="(ibrav+){0,1}x[yz]"/>
-      <pattern value="(ibrav+)xyz"/>
-      <pattern value="(ibrav+){0,1}shape"/>
-      <pattern value="(ibrav+){0,1}volume"/>
-      <pattern value="(ibrav+){0,1}2Dxy"/> 
-      <pattern value="(ibrav+){0,1}2DShape"/>
-      <pattern value="(ibrav+){0,1}epitaxial_[ab][bc]"/>
+      <pattern value="all"/>
+      <pattern value="ibrav(\+all)"/>
+      <pattern value="(ibrav\+){0,1}[xyz]"/>
+      <pattern value="(ibrav\+){0,1}x[yz]"/>
+      <pattern value="(ibrav\+)xyz"/>
+      <pattern value="(ibrav\+){0,1}shape"/>
+      <pattern value="(ibrav\+){0,1}volume"/>
+      <pattern value="(ibrav\+){0,1}2Dxy"/> 
+      <pattern value="(ibrav\+){0,1}2DShape"/>
+      <pattern value="(ibrav\+){0,1}epitaxial_[ab][bc]"/>
     </restriction>
   </simpleType>
   <complexType name="symmetry_flagsType">
@@ -1193,6 +1194,7 @@ datecode 211101
     <simpleContent>
       <extension base="double">
         <attribute type="string" name="Units"/>
+        <attribute type="string" name="UNITS"/>
       </extension>
     </simpleContent>
   </complexType>
