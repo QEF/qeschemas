@@ -419,12 +419,12 @@ datecode 211101
   </simpleType>
   <complexType name="HubbardBackType">
     <sequence>
-			<element type="positiveInteger" name="n2_number" minOccurs="0" maxOccurs="1"/>
-      <element type="qes:backrestrType" name="background" minOccurs="1" maxOccurs="1"/>
-      <element type="qes:backLType" name="l2_number" minOccurs="1" maxOccurs="1"/>
+			<element type="positiveInteger" name="n2_number" minOccurs="1" maxOccurs="1"/>
+      <element type="positiveInteger" name="l2_number" minOccurs="1" maxOccurs="1"/>
       <element type="positiveInteger" name="n3_number" minOccurs="0" maxOccurs="1"/>
-      <element type="qes:backLType" name="l3_number" minOccurs="0" maxOccurs="1"/>
+      <element type="positiveInteger" name="l3_number" minOccurs="0" maxOccurs="1"/>
     </sequence>
+    <attribute type="qes:backrestrType" name="background" use="required"/>
     <attribute type="string" name="species"/>
   </complexType>
   <simpleType name="backrestrType">
@@ -433,13 +433,6 @@ datecode 211101
       <enumeration value="one_orbital"/>
     </restriction>
   </simpleType>
-  <complexType name="backLType">
-    <simpleContent>
-      <extension base="nonNegativeInteger">
-      <attribute name="l_index" type="nonNegativeInteger"/>
-    </extension>
-    </simpleContent>
-  </complexType>
   <complexType name="vdWType">
     <sequence>
       <element type="string" name = "vdw_corr" minOccurs = "0"/>
