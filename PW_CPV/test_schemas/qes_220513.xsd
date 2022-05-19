@@ -338,7 +338,6 @@ datecode 211101
       <element type="qes:Hubbard_nsType" name="Hubbard_ns" minOccurs="0" maxOccurs="unbounded"/>
       <element type="qes:HubbardProjType" name="U_projection_type" minOccurs="0"/>
       <element type="qes:HubbardBackType"  name="Hubbard_back"  minOccurs="0" maxOccurs="unbounded"/>
-      <element type="qes:HubbardCommonType" name="Hubbard_U2" minOccurs="0" maxOccurs="unbounded"/>
       <element type="qes:HubbardCommonType" name="Hubbard_alpha_back" minOccurs="0" maxOccurs="unbounded"/>
       <element type="qes:Hubbard_nsType" name="Hubbard_ns_nc" minOccurs="0" maxOccurs="unbounded"/>
     </sequence>
@@ -419,6 +418,7 @@ datecode 211101
   </simpleType>
   <complexType name="HubbardBackType">
     <sequence>
+      <element type="double" name="Hubbard_U2" minOccurs="1" maxOccurs="1" />
 			<element type="positiveInteger" name="n2_number" minOccurs="1" maxOccurs="1"/>
       <element type="positiveInteger" name="l2_number" minOccurs="1" maxOccurs="1"/>
       <element type="positiveInteger" name="n3_number" minOccurs="0" maxOccurs="1"/>
