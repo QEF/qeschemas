@@ -653,7 +653,7 @@ datecode 220603
     <enumeration value="cg"/>
     <enumeration value="ppcg"/>
     <enumeration value="paro"/>
-    <enumeration value="rmm(-davidson){0,1}(-paro){01}"/>
+    <enumeration value="\s*rmm(-davidson|-paro)\s*"/>
     </restriction>
   </simpleType>
   <complexType name="k_points_IBZType">
@@ -737,16 +737,16 @@ datecode 220603
   </complexType>
   <simpleType name="celldofreeType">
     <restriction base="string">
-      <pattern value="all"/>
-      <pattern value="ibrav(\+all)"/>
-      <pattern value="(ibrav\+){0,1}[xyz]"/>
-      <pattern value="(ibrav\+){0,1}x[yz]"/>
-      <pattern value="(ibrav\+)xyz"/>
-      <pattern value="(ibrav\+){0,1}shape"/>
-      <pattern value="(ibrav\+){0,1}volume"/>
-      <pattern value="(ibrav\+){0,1}2Dxy"/> 
-      <pattern value="(ibrav\+){0,1}2DShape"/>
-      <pattern value="(ibrav\+){0,1}epitaxial_[ab][bc]"/>
+      <pattern value="\s*all\s*"/>
+      <pattern value="\s*ibrav(\+all)\s*"/>
+      <pattern value="\s*(ibrav\+){0,1}[xyz]\s*"/>
+      <pattern value="\s*(ibrav\+){0,1}x[yz]\s*"/>
+      <pattern value="\s*(ibrav\+)xyz\s*"/>
+      <pattern value="\s*(ibrav\+){0,1}shape\s*"/>
+      <pattern value="\s*(ibrav\+){0,1}volume\s*"/>
+      <pattern value="\s*(ibrav\+){0,1}2Dxy\s*"/> 
+      <pattern value="\s*(ibrav\+){0,1}2DShape\s*"/>
+      <pattern value="\s*(ibrav\+){0,1}epitaxial_[ab][bc]\s*"/>
     </restriction>
   </simpleType>
   <complexType name="symmetry_flagsType">
