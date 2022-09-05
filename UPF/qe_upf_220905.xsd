@@ -1,0 +1,1600 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="my.xsl"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+
+  <!-- Definition of elements -->
+
+  <xs:element name="UPF">
+    <xs:annotation>
+      <xs:documentation>Root section</xs:documentation> 
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="PP_INFO" minOccurs="0"/>
+        <xs:element ref="PP_HEADER"/>
+        <xs:element ref="PP_MESH"/>
+        <xs:element ref="PP_NLCC" minOccurs="0"/>
+        <xs:element ref="PP_LOCAL"/>
+        <xs:element ref="PP_SEMILOCAL" minOccurs="0"/>
+        <xs:element ref="PP_NONLOCAL"/>
+        <xs:element ref="PP_PSWFC"/>
+        <xs:element ref="PP_RHOATOM"/>
+        <xs:element ref="PP_PAW" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attribute name="version" use="required" type="upf-version-string"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="PP_INFO" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>
+        For human-readable data (ignored by QE).
+      </xs:documentation> 
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="PP_HEADER">
+    <xs:annotation>
+      <xs:documentation>
+        Machine-readable minimal data on the pseudopotential.
+      </xs:documentation> 
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="element" use="required" type="upf-element">
+        <xs:annotation>
+          <xs:documentation>Element symbol</xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="generated" use="optional" type="upf-string">
+        <xs:annotation>
+          <xs:documentation>Software used to generate the pseudopotential
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="author" use="optional" type="upf-string"
+                                                 default="anonymous">
+        <xs:annotation>
+          <xs:documentation>Author of pseudopotential</xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="date" use="optional">
+        <xs:annotation>
+          <xs:documentation>Generation date</xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="comment" use="optional" type="upf-longstring"/>
+
+      <xs:attribute name="pseudo_type" use="required" type="upf-pseudotype">
+        <xs:annotation>
+          <xs:documentation>
+            Pseudopotential type (not used by the software, 
+            human-readable alias)
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="relativistic" use="required" type="upf-relativistic-type">
+        <xs:annotation>
+          <xs:documentation>
+            Level of relativistic formalism used in atomic calculation
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="is_ultrasoft" use="required" type="upf-logical">
+        <xs:annotation>
+          <xs:documentation>
+            True if pseudopotential is ultrasoft or PAW, 
+            i.e. if it has augmentation/compensation charge
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="is_paw" use="required" type="upf-logical">
+        <xs:annotation>
+          <xs:documentation>
+            True if pseudopotential is actually a PAW dataset
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="is_coulomb" use="optional" type="upf-logical" 
+                    default=".false.">
+        <xs:annotation>
+          <xs:documentation>
+            True if pseudopotential is a Coulombian 1/r potential
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="has_so" use="optional" type="upf-logical" 
+                    default=".false.">
+        <xs:annotation>
+          <xs:documentation>
+            True if spin-orbit information is present.
+            In this case, the PP_SPIN_ORB section must be present.
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="has_gipaw" use="optional" type="upf-logical"
+                    default=".false.">
+        <xs:annotation>
+          <xs:documentation>
+            True if additional information for GIPAW reconstruction is
+            present. In this case, the PP_GIPAW section must be present.
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="core_correction" use="required" type="upf-logical">
+        <xs:annotation>
+          <xs:documentation>
+            True if the pseudopotential contains pseudized core charge
+            for non-linear core.
+            In this case, the PP_NLCC section must be present.
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="functional" use="required" type="upf-shortstring">
+        <xs:annotation>
+          <xs:documentation>
+            Short-name for the DFT functional used.
+            It can either be an alias (such as PBE, LDA) or specify in order:
+            functional for exchange, functional for corellation,
+            gradient correction for exchange, gradient correction for corellation.
+            E.g. PBE is 'SLA PW PBX PBC'. 
+            The list of short-names understood by QE is listed at the beginning
+            of file Modules/functional.f90 in its source tree.
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="z_valence" use="required" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>
+            Valence charge (atomic number - core charge) in units of
+            abs(electron charge). This will usually coincide with the
+            number of valence electrons.
+            If the pseudopotential has been generated with a charged 
+            configuration, z_valence will *not* be affected, but the sum
+            of the occupations will not match this value.
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="total_psenergy" use="optional" type="xs:double"
+                    default="0.0">
+        <xs:annotation>
+          <xs:documentation>
+            Pseudopotential energy of the configuration used 
+            for the pseudopotential configuration (Ry)
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="wfc_cutoff" use="optional" type="xs:double"
+                    default="0.0">
+        <xs:annotation>
+          <xs:documentation>
+            Suggested plane wave cutoff (Ry)
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="rho_cutoff" use="optional" type="xs:double"
+                    default="0.0">
+        <xs:annotation>
+          <xs:documentation>
+            Suggested charge density cutoff (Ry)
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="l_max" use="required" type="xs:integer">
+        <xs:annotation>
+          <xs:documentation>
+            Maximum angular momentum of a valence orbital.
+            !!CHECK!! if the local channel has the maximum angular momentum, 
+            and it is not empty, is it counted here or not? 
+            Would it have any effect if it is wrong?
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="l_max_rho" use="required" type="xs:integer">
+        <xs:annotation>
+          <xs:documentation>
+            Maximum angular momentum of atomic charge density,
+            should be 2*l_max.
+            !!CHECK!! same as l_max
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="l_local" use="optional" type="xs:integer">
+        <xs:annotation>
+          <xs:documentation>
+            If local potential was generated by inversion of a norm-conserving
+            wave function, then l_local is equal to the l of this channel.
+            If the local potential was generated by some other means,
+            e.g. smoothing the all-electron potential, then l_local &lt; 0.
+            The atomic code in QE uses l_local=-1, if the smoothing was done
+            with two Bessel functions (RRKJ optimized)
+            and l_local=-2, of it was done with the Troullier-Martins recipe.
+            Note that the local potential always has spherical symmetry.
+
+            This attribute is actually unused in the plane-wave code
+            (stored only for reconstruction purposes).
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="mesh_size" use="required" type="xs:integer">
+        <xs:annotation>
+          <xs:documentation>
+            Number of points in the radial grid, on which potential,
+            wave functions and other quantities are stored.
+
+            Note: the number of mesh points for the potential and the 
+            wave functions may in principle be different. This is not
+            allowed in the UPF 2.0.1 format.
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="number_of_wfc" use="required" type="xs:integer">
+        <xs:annotation>
+          <xs:documentation>
+            Number of wave functions stored in the file.
+            These wave functions are used by QE programs only to bootstrap
+            self-consistency.
+
+            Note: In the PAW case, these are *not* the wave functions used
+            for the one-center terms. They are used ONLY to generate the
+            initial charge density to bootstrap the self-consistent cycle.
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="number_of_proj" use="required" type="xs:integer">
+        <xs:annotation>
+          <xs:documentation>
+            Number of Kleinman-Bylander projectors in the pseudopotential.
+            In the PAW formalism, this is also the number of wavefunctions
+            used in one-center terms. Many other quantities, e.g. the number
+            of augmentation channels, depend on the value of number_of_proj.
+            If the pseudopotential has no projectors, number_of_proj must be
+            set to zero.
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="has_wfc" use="required" type="xs:NCName">
+        <xs:annotation>
+          <xs:documentation>
+            Deprecated??
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="paw_as_gipaw" use="required" type="xs:NCName">
+        <xs:annotation>
+          <xs:documentation>
+            Deprecated??
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="PP_MESH">
+    <xs:annotation>
+      <xs:documentation>
+        Defines the mesh.
+      </xs:documentation> 
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="PP_R"/>
+        <xs:element ref="PP_RAB"/>
+      </xs:sequence>
+
+      <xs:attribute name="dx" use="optional" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>
+            r(i) = exp ( xmin + (i-1) dx ) / zmesh i=1,mesh
+            r_ab(i) = r(i) * dx
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="xmin" use="optional" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>
+            r(i) = exp ( xmin + (i-1) dx ) / zmesh i=1,mesh
+            r_ab(i) = r(i) * dx
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="zmesh" use="optional" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>
+            r(i) = exp ( xmin + (i-1) dx ) / zmesh i=1,mesh
+            r_ab(i) = r(i) * dx
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="mesh" use="optional" type="xs:integer">
+        <xs:annotation>
+          <xs:documentation>
+            Deprecated. Use mesh_size in PP_HEADER instead.
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="rmax" use="required" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>
+            Deprecated??
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="PP_R" type="upf-data-section">
+    <xs:annotation>
+      <xs:documentation>
+        Data section containing the radial grid,
+        on which quantities such as local potential,
+        wave functions, projectors and augmentation charges are sampled.
+        The ith value of these quantities corresponds to the ith
+        element of the radial grid.
+      </xs:documentation> 
+    </xs:annotation>
+    <!--    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="upf-list-of-doubles">
+          <xs:attribute name="type" use="required" type="xs:NCName"/>
+          <xs:attribute name="size" use="required" type="xs:integer"/>
+          <xs:attribute name="columns" use="required" type="xs:integer"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+-->
+  </xs:element>
+
+  <xs:element name="PP_RAB" type="upf-data-section">
+    <xs:annotation>
+      <xs:documentation>
+        Data section containing the radial volume element.
+        These attributes have been used to generate the logarithmic grid on
+        which the pseudopotential is constructed.
+        The expression insode the atomic code of QE is:
+          r(i) = exp ( xmin + (i-1) dx ) / zmesh i=1,mesh
+          r_ab(i) = r(i) * dx
+        For PAW, this is the only acceptable grid (required in V_H).
+        Otherwise, any kind of grid is accepted, if it can be used to compute
+        a Simpson numerical integral according to the formula
+          \sum_i c_i f(i)*rab(i) = \int_0^\infty f_i dr
+        where c_i are alternativly 2/3 and 4/3, except c_1=c_mesh=1/3.
+        f_i is a generic function, such as the atomic wave function, sampled on
+        the grid r(i): f_i = f(r_i). An equivalent definition of rab is
+          rab(i) = dr(x) / dx | x= i
+      </xs:documentation> 
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="PP_NLCC" type="upf-data-section">
+    <xs:annotation>
+      <xs:documentation>
+        Data section containing the pseudized core charge
+        used for non-linear core correction
+        sampled on the radial grid stored in PP_R.
+        It is the true charge density, i.e. it will be 
+        correctly integrated as
+          \sum_i 4 \pi r_i^2 nlcc_i
+
+        Ignored if core_correction is false.
+      </xs:documentation> 
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="PP_LOCAL" type="upf-data-section">
+    <xs:annotation>
+      <xs:documentation>
+        Data section containing the local potential sampled in the radial grid
+        (Ry). The potential does not contain the effect of the net valence charge
+        (-e2*z_valence/r_i), which will be added directly in the plane-wave code.
+
+        Igonred if is_coulomb (PP_HEADER).
+      </xs:documentation> 
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="PP_SEMILOCAL">
+    <xs:annotation>
+      <xs:documentation>
+        Contains number_of_proj subsections PP_VNL for PPs in semilocal form.
+        Not used by QE.
+      </xs:documentation> 
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="PP_VNL.1" minOccurs="0" maxOccurs="1"
+                    type="upf-PP_VNL.n"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="upf-PP_VNL.n">
+    <xs:annotation>
+      <xs:documentation>
+        Contains the pseudopotential for l and j specified in the attribute
+        list.
+      </xs:documentation> 
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="upf-data-section">
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="PP_NONLOCAL">
+    <xs:annotation>
+      <xs:documentation>
+        Content of this section depends on several settings in PP_HEADER.
+      </xs:documentation> 
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="PP_BETA.1" minOccurs="0" maxOccurs="1"
+                    type="upf-PP_BETA.n"/>
+        <xs:element name="PP_BETA.2" minOccurs="0" maxOccurs="1"
+                    type="upf-PP_BETA.n"/>
+        <xs:element name="PP_BETA.3" minOccurs="0" maxOccurs="1"
+                    type="upf-PP_BETA.n"/>
+        <xs:element name="PP_BETA.4" minOccurs="0" maxOccurs="1"
+                    type="upf-PP_BETA.n"/>
+        <xs:element name="PP_BETA.5" minOccurs="0" maxOccurs="1"
+                    type="upf-PP_BETA.n"/>
+        <xs:element name="PP_BETA.6" minOccurs="0" maxOccurs="1"
+                    type="upf-PP_BETA.n"/>
+        <xs:element ref="PP_DIJ"/>
+        <xs:element ref="PP_AUGMENTATION" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="upf-PP_BETA.n">
+    <xs:annotation>
+      <xs:documentation>
+        Contains a Kleinman-Bylander projector sampled on the radial grid.
+
+        If number_of_proj > 0, there must be a PP_BETA.n section for each
+        n between 1 and number_of_proj.
+      </xs:documentation> 
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="upf-data-section">
+        <xs:attribute name="index" use="optional" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              For PP_BETA.n, this is just n.
+              
+              TODO do away with the PP_BETA.n naming scheme.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="angular_momentum" use="required" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              The angular momentum of the projector.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="cutoff_radius_index" use="optional" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              The projector is assumed to be zero beyond this point.
+              If it is not specified, it is assumed to be equal to the mesh size.
+              
+              NOTE: Not specifying cutoff_radius can introduce a considerable
+              numerical noise in some integrals, especially in the PAW case.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="cutoff_radius" use="optional" type="xs:double">
+          <xs:annotation>
+            <xs:documentation>
+              The value of the radial mesh point corresponding to cutoff_radius_index.
+              This value is currently unused in the plane-wave code.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="norm_conserving_radius" use="optional" type="xs:double">
+          <xs:annotation>
+            <xs:documentation>
+              Value of norm conserving wave function used to generate the 
+              ultrasoft pseudopotential. 
+              Ununsed in the code, stored only for reconstruction purposes,
+              meaningless for PAW.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="ultrasoft_cutoff_radius" use="required" type="xs:double">
+          <xs:annotation>
+            <xs:documentation>
+              UNDOCUMENTED
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="label" use="required" type="xs:NMTOKEN">
+          <xs:annotation>
+            <xs:documentation>
+              UNDOCUMENTED
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+    <xs:element name="PP_DIJ">
+      <xs:annotation>
+        <xs:documentation>
+          Hamiltonian pseudo coefficients as defined in the Vanderbilt paper
+          (PRB 1990).
+          If the pseudopotential is a PAW data set, they must contain the
+          kinetic energy difference as well.
+
+          !!CHECK!! a better/more accurate definition for these would be useful.
+        </xs:documentation> 
+      </xs:annotation>
+      <xs:complexType>
+        <xs:simpleContent>
+          <xs:extension base="xs:double">
+            <xs:attribute name="columns" use="required" type="xs:integer"/>
+            <xs:attribute name="size" use="required" type="xs:integer"/>
+            <xs:attribute name="type" use="required" type="xs:NCName"/>
+          </xs:extension>
+        </xs:simpleContent>
+      </xs:complexType>
+    </xs:element>
+
+
+ <xs:element name="PP_AUGMENTATION">
+    <xs:annotation>
+      <xs:documentation>
+        Compulsory for pseudopotentials with augmentation charge,
+        i.e. when the pseudopotential is_ultrasoft
+        (presently ultrasoft or PAW).
+      </xs:documentation> 
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="PP_Q"/>
+        <xs:element ref="PP_MULTIPOLES"/>
+        <xs:element ref="PP_QFCOEFF"/>
+        <xs:element ref="PP_RINNER"/>
+        <xs:element name="PP_QIJL.1.1.0" minOccurs="0" maxOccurs="1"
+                    type="upf-PP_QIJL.n.n.n"/>
+      </xs:sequence>
+      <xs:attribute name="q_with_l" use="required" type="upf-logical">
+          <xs:annotation>
+            <xs:documentation>
+              If true, the augmentation charge can depend on the value
+              of the angular momentum. I.e. if a certain channel has more
+              than one angular momentum component, there shall be a different
+              radial form of the augmentation for each component.
+
+             This attribute is false for Vanderbilt's original recipe.
+             It is true for PAW.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+      <xs:attribute name="nqf" use="optional" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              Specifies the number of coefficients used to analytically expand
+              the augmentation charge at small radius,
+              according to Vanderbilt's recipe.
+
+              Note: The analytical expansion of augmentation charge is 
+              currently not implemented for PAW.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+      <xs:attribute name="nqlc" use="optional" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              Specifies the number of angular momentum components that can be
+              present in the charge density, when the maximum angular momentum
+              for wave functions is l_max (default: nqlc = 2*l_max+1).
+ 
+              If nqf &gt; 0, nqlc is the dimension of several arrays.
+              If nqf = 0, nqlc is not used.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+      <xs:attribute name="shape" use="optional" type="upf-shortstring">
+          <xs:annotation>
+            <xs:documentation>
+              Describes the kind of pseudization used for the augmentation
+              function. Currently unused, stored only for reconstructio purpose.
+
+              Note: If the analytical overlap for PAW augmentation charge
+              (as defined by Bloechl) will ever be implemented, this field
+              will become necessary.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+      <xs:attribute name="iraug" use="optional" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              All augmentation charge must be zero beyond this point.
+              Used only for PAW and only if it is greater than cutoff_radius
+              for all projectors.
+
+              If not specified, iraug is set to mesh size.
+              This default works, but can generate numerical noise in some
+              integrals. In order to avoid large round-off errors in 
+              cancellation of PAW terms, it is important to set this paramter
+              as small as possible, i.e. just outside the augmentation radius.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+      <xs:attribute name="raug" use="optional" type="xs:double">
+          <xs:annotation>
+            <xs:documentation>
+              The value of the radial mesh point corresponding to iraug.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+      <xs:attribute name="augmentation_epsilon" use="optional" type="xs:double">
+          <xs:annotation>
+            <xs:documentation>
+              If augmentation_epsilon &gt; 0, augmentation functions,
+              whose norm is less than augmentation_epsilon will be 
+              considered zero.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+      <xs:attribute name="cutoff_r" use="optional" type="xs:double">
+          <xs:annotation>
+            <xs:documentation>
+              Deprecated?
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+      <xs:attribute name="cutoff_r_index" use="optional" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              Deprecated?
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+      <xs:attribute name="l_max_aug" use="optional" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              Deprecated?
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="PP_Q" type="upf-data-section">
+    <xs:annotation>
+      <xs:documentation>
+        The norm of the augmentation functions.
+
+        Note: The fact that Q is zero for a certain augmentation function
+        does not guarantee that the function will be identically zero.
+        This was erroneously assumed in UPF 2.0.0, causing small errors
+        in specific cases.
+      </xs:documentation> 
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="PP_MULTIPOLES" type="upf-data-section">
+    <xs:annotation>
+      <xs:documentation>
+        The electrostatic multipoles of the corresponding augmentation channel.
+        If the absolute value of a multipole is less than augmentation_epsilon,
+        the corresponding function will be considered zero.
+
+        Note: This section is compulsory for PAW and ignored otherwise.
+      </xs:documentation> 
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="PP_QFCOEFF" type="upf-data-section">
+    <xs:annotation>
+      <xs:documentation>
+        The coefficient used to perform a Taylor expansion of the augmentation
+        functions at small radii.
+
+        Note: Compulsory if nqf &gt; 0, ignored otherwise.
+      </xs:documentation> 
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="PP_RINNER" type="upf-data-section">
+    <xs:annotation>
+      <xs:documentation>
+        The radius before which the augmentation functions are expanded in a
+        Taylor series.
+      </xs:documentation> 
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="upf-PP_QIJL.n.n.n">
+    <xs:annotation>
+      <xs:documentation>
+        If q_with_l is true, there needs to be one PP_Q.i.j.l section
+        for each i and j from 1 to number_of_proj and l from 0 to l_max_rho.
+        If q_with_l is false, there needs to be one PP_Q.i.j section
+        for each i and j from 1 to number_of_proj.
+
+        An augmentation function can be omitted (or replaced with an empty
+        section of the same name), if at least one of the following conditions
+        is met:
+         
+          - It is identically zero. In this case, an empty section must be 
+            present (see is_null).
+          - j &lt; i (Q_ij = Q_ji due to symmetry).
+          - The pseudo is of PAW type and the corresponding multipole
+            (PP_MULTIPOLES) is zero or less than augmentation_epsilon
+          - q_with_l is true and l is *not* taken from the list
+            abs(l_i-l_j), abs(l_i-l_j)+2 ... l_i+l_j-2, l_i+l_j .
+
+        Unnecessary sections with augmentation charges are ignored.
+      </xs:documentation> 
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="upf-data-section">
+        <xs:attribute name="angular_momentum" use="required" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              To be documented.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="first_index" use="optional" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              The index i of the function.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="second_index" use="optional" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              The index j of the function.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="composite_index" use="optional" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              A composite index k = j*(J-1)/2 + i, 
+              used internally to save memory.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="is_null" use="optional" type="upf-logical">
+          <xs:annotation>
+            <xs:documentation>
+              If an augmentation function is identically zero,
+              the data section can be replaced by an empty section
+              that is_null.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+
+
+    <xs:element name="PP_PSWFC">
+      <xs:annotation>
+        <xs:documentation>
+          Contains number_of_wfc data sections of the radial sample of an atomic
+          wave function. These wave functions are used to set up the initial
+          wave functions for the self-consistent calculation.
+        </xs:documentation> 
+      </xs:annotation>
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="PP_CHI.1" minOccurs="0" maxOccurs="1"
+                      type="upf-PP_CHI.n"/>
+          <xs:element name="PP_CHI.2" minOccurs="0" maxOccurs="1"
+                      type="upf-PP_CHI.n"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:element>
+
+  <xs:complexType name="upf-PP_CHI.n">
+    <xs:annotation>
+      <xs:documentation>
+        An atomic wave function sampled on the radial grid.
+        They are use in QE as initial conditions for the self-consistent
+        calculation.
+
+        Note: There is no link between these wave functions and the beta
+        projectors in PP_NONLOCAL. number_of_wfc can be different from
+        number_of_proj. 
+        This quantity is stored multiplied by a factor r.
+      </xs:documentation> 
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="upf-data-section">
+        <xs:attribute name="l" use="required" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              Angular momentum of the wave function.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="occupation" use="required" type="xs:double">
+          <xs:annotation>
+            <xs:documentation>
+              Occupation of the wave function in the reference configuration.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="index" use="optional" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              The index n in PP_CHI.n
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="label" use="optional" type="upf-nl-label">
+          <xs:annotation>
+            <xs:documentation>
+              A conventional label, such as '2S', '3P', etc.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="n" use="optional" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              Pseudo-principal quantum number. 
+              Usually set to l-1. Only stored for reconstruction purposes.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="pseudo_energy" use="optional" type="xs:double">
+          <xs:annotation>
+            <xs:documentation>
+              Single-particle energy of the wave function in atomic 
+              configuration.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="cutoff_radius" use="optional" type="xs:double">
+          <xs:annotation>
+            <xs:documentation>
+              Inner norm-conserving radius used by atomic code in QE.
+              Only stored for reconstruction purposes.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="ultrasoft_cutoff_radius" use="optional" 
+                      type="xs:double">
+          <xs:annotation>
+            <xs:documentation>
+              Outer ultrasoft radius used by atomic code in QE.
+              Only stored for reconstruction purposes.
+              A conventional label, such as '2S', '3P', etc.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+    </xs:complexType>
+
+    <xs:element name="PP_RHOATOM" type="upf-data-section">
+      <xs:annotation>
+        <xs:documentation>
+          The valence charge density in the reference atomic configuration.
+          Can be used to genreate the initial charge density in the
+          self-consistent calculation.
+
+          This quantity is stored multiplied by a factor of r^2.
+        </xs:documentation> 
+      </xs:annotation>
+    </xs:element>
+
+    <xs:element name="PP_SPIN_ORB">
+      <xs:annotation>
+        <xs:documentation>
+          Contains additional information required to perform 
+          self consistent calculations with spin-orbit coupling.
+
+          The section must be present if 'has_so' in section
+          PP_HEADER is true.  Otherwise it is ignored.
+        </xs:documentation> 
+      </xs:annotation>
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="PP_RELWFC.1" minOccurs="0" maxOccurs="1"
+                      type="upf-PP_RELWFC.n"/>
+          <xs:element name="PP_RELBETA.1" minOccurs="0" maxOccurs="1"
+                      type="upf-PP_RELBETA.n"/>
+        </xs:sequence>
+      </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="upf-PP_RELWFC.n">
+    <xs:annotation>
+      <xs:documentation>
+        Contains data necessary to perform a spin-orbit self-consistent
+        calculation.
+
+        For each wave function stored in the PP_PSWFC section,
+        there must be one empty section of this kind.
+        The index n runs from 1 to number_of_wfc.
+      </xs:documentation> 
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="upf-data-section">
+        <xs:attribute name="jchi" use="required" type="xs:double">
+          <xs:annotation>
+            <xs:documentation>
+              Total angular momentum of the wave function,
+              i.e. l+1/2, l-1/2 when l>0.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="index" use="optional" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              The index n in PP_RELWFC.n
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="els" use="optional" type="upf-nl-label">
+          <xs:annotation>
+            <xs:documentation>
+              A conventional label for the wave function, 
+              such as '2S', '3P', etc.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="nn" use="optional" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              The actual principal quantum number.
+              Note: This can differ from the pseudo-principal quantum number
+              stored in the 'nchi' attribute of PP_CHI.n
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="lchi" use="optional" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              See attribute 'lchi' of PP_CHI.n (which is used as default).
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="oc" use="optional" type="xs:double">
+          <xs:annotation>
+            <xs:documentation>
+              See attribute 'occupations' of PP_CHI.n
+              (which is used as default).
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="upf-PP_RELBETA.n">
+    <xs:annotation>
+      <xs:documentation>
+        Contains data necessary to perform a spin-orbit self-consistent
+        calculation.
+
+        For each projector in section PP_NONLOCAL,
+        there must be one empty section of this kind.
+        The index n runs from 1 to number_of_proj.
+      </xs:documentation> 
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="upf-data-section">
+        <xs:attribute name="index" use="optional" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              The index n in PP_RELBETA.n
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="jjj" use="required" type="xs:double">
+          <xs:annotation>
+            <xs:documentation>
+              Total angular momentum of the wave function.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="lll" use="optional" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              See attribute 'angular_momentum' or corresponding PP_BETA.n
+              subsection of PP_NONLOCAL (whose value is used as default).
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="PP_PAW">
+    <xs:annotation>
+      <xs:documentation>
+        Contains additional information required to perform 
+        projector-augmented self-consistent calculation,
+        i.e. an all-electron wave function for each projector,
+        the all-electron local potential as well as the all-electron
+        core charge for non-linear core correction.
+
+        The section (as well as PP_MULTIPOLES and PP_NONLOCAL) must be present
+        if 'is_paw' in section PP_HEADER is true.  Otherwise it is ignored.
+      </xs:documentation> 
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="PP_OCCUPATIONS"/>
+        <xs:element ref="PP_AE_NLCC"/>
+        <xs:element ref="PP_AE_VLOC"/>
+        <xs:element name="PP_AEWFC.1" minOccurs="0" maxOccurs="1"
+                    type="upf-PP_AEWFC.n"/>
+        <xs:element name="PP_PSWFC.1" minOccurs="0" maxOccurs="1"
+                    type="upf-PP_PSWFC.n"/>
+      </xs:sequence>
+      <xs:attribute name="core_energy" use="optional" type="xs:double"
+                    default="0.0">
+        <xs:annotation>
+          <xs:documentation>
+            Constant that has to be added to the valence energy in order to
+            obtain the all-electron energy.
+            As it is a constant, it has no effect on the result
+            of the calculation.
+
+            Only used, if all atoms of the system are described by
+            PAW data sets.
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute> 
+
+      <xs:attribute name="paw_data_format" use="required" type="xs:integer">
+        <xs:annotation>
+          <xs:documentation>
+            UNDOCUMENTED
+            
+            See gipaw_data_format of PP_GIPAW section.
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute> 
+
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="PP_OCCUPATIONS" type="upf-data-section">
+    <xs:annotation>
+      <xs:documentation>
+        Occupations used in the atomic reference configuration.
+        
+        Note: For higher energy projectors, this occupation will
+        typically be zero. They are used as an initial condition for the
+        self-consistency of the terms
+          
+          \rho_{ij} = \sum_b f_b \langle \beta_i | \psi_b \rangle
+                                 \langle \psi_b | \beta_j \rangle
+
+        Dimensions: number_of_proj 
+      </xs:documentation> 
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="PP_AE_NLCC" type="upf-data-section">
+    <xs:annotation>
+      <xs:documentation>
+        The all-electron core charge (no factors r^2 or 4\pi
+        as in PP_NLCC).
+
+        Note: This section must be present even when the 
+        attribute 'core_correction' of section PP_HEADER is false
+        in order to correctly reproduce the all-electron energy.
+
+        Dimension: mesh_size
+      </xs:documentation> 
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="PP_AE_VLOC" type="upf-data-section">
+    <xs:annotation>
+      <xs:documentation>
+        The all-electron valence potential.
+
+        Dimension: mesh_size
+      </xs:documentation> 
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="upf-PP_AEWFC.n">
+    <xs:annotation>
+      <xs:documentation>
+        Contains one all-electron orbital for each projector.
+
+        The index n ranges from 1 to number_of_proj.
+
+        Note: The orbitals are stored multiplied by a factor of r.
+        I.e. their square module already contain the factor r^2 of
+        the spherical volume element.
+
+        Dimension: mesh_size
+      </xs:documentation> 
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="upf-data-section">
+        <xs:attribute name="index" use="required" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              UNDOCUMENTED
+
+              Maybe: The index n in PP_AEWFC.n
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="l" use="required" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              UNDOCUMENTED
+
+              Maybe: Angular momentum of the wave function.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="label" use="required" type="upf-nl-label">
+          <xs:annotation>
+            <xs:documentation>
+              UNDOCUMENTED
+
+              Maybe: A conventional label, such as '2S', '3P', etc.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="upf-PP_PSWFC.n">
+    <xs:annotation>
+      <xs:documentation>
+        Contains one pseudo orbital for each projector.
+
+        The index n ranges from 1 to number_of_proj.
+
+        Note: The orbitals are stored multiplied by a factor of r.
+        I.e. their square module already contain the factor r^2 of
+        the spherical volume element.
+
+        Dimension: mesh_size
+      </xs:documentation> 
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="upf-data-section">
+        <xs:attribute name="index" use="required" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              UNDOCUMENTED
+
+              Maybe: The index n in PP_PSWFC.n
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="l" use="required" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              UNDOCUMENTED
+
+              Maybe: Angular momentum of the wave function.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="label" use="required" type="upf-nl-label">
+          <xs:annotation>
+            <xs:documentation>
+              UNDOCUMENTED
+
+              Maybe: A conventional label, such as '2S', '3P', etc.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="PP_GIPAW_RECONSTRUCTION">
+    <xs:annotation>
+      <xs:documentation>
+        Contains additional information required by the GIPAW code
+        in order to reconstruct the all-electron charge density
+        and to calculate the NMR response.
+
+        This section must be present, if 'has_gipaw' in section PP_HEADER
+        is true.
+
+        Note: This section is independent of the PP_PAW section.
+      </xs:documentation> 
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="PP_GIPAW_CORE_ORBITALS"/>
+        <xs:element ref="PP_GIPAW_ORBITALS"/>
+        <xs:element ref="PP_GIPAW_VLOCAL"/>
+      </xs:sequence>
+
+      <xs:attribute name="gipaw_data_format" use="required" type="xs:integer">
+        <xs:annotation>
+          <xs:documentation>
+            Format version string composed of three dot-separated integers.
+            Current version is "0.1.0".
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute> 
+
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="PP_GIPAW_CORE_ORBITALS">
+    <xs:annotation>
+      <xs:documentation>
+        Contains the all-electron core orbitals.
+      </xs:documentation> 
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="PP_GIPAW_CORE_ORBITAL.n" minOccurs="0" maxOccurs="1"
+                    type="upf-PP_AEWFC.n"/>
+      </xs:sequence>
+      <xs:attribute name="number_of_core_orbitals" use="required" type="xs:integer">
+        <xs:annotation>
+          <xs:documentation>
+            The number of core orbitals included in the data set.
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="upf-GIPAW_CORE_ORBITAL.n">
+    <xs:annotation>
+      <xs:documentation>
+        Contains all-electron orbital for particular projector.
+
+        The index n ranges from 1 to number_of_proj.
+
+        Note: The orbitals are stored multiplied by a factor of r.
+        I.e. their square module already contain the factor r^2 of
+        the spherical volume element.
+
+        Dimension: mesh_size
+      </xs:documentation> 
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="upf-data-section">
+        <xs:attribute name="index" use="optional" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              UNDOCUMENTED
+
+              The index n in PP_GIPAW_CORE_ORBITAL.n
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="l" use="required" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              Angular momentum quantum number of the wave function.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="n" use="required" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>
+              Principal quantum number of the wave function.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="label" use="required" type="upf-nl-label">
+          <xs:annotation>
+            <xs:documentation>
+              A conventional label for the wave function, 
+              such as '2S', '3P', etc.
+            </xs:documentation> 
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="PP_GIPAW_ORBITALS">
+    <xs:annotation>
+      <xs:documentation>
+        Contains the valence pseudo and all-electron orbitals.
+      </xs:documentation> 
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="PP_GIPAW_ORBITAL.n" minOccurs="0" maxOccurs="1"
+                    type="upf-PP_AEWFC.n"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="upf-GIPAW_ORBITAL.n">
+    <xs:annotation>
+      <xs:documentation>
+        Contains all-electron orbital for particular projector.
+
+        The index n ranges from 1 to number_of_proj.
+
+        Note: The orbitals are stored multiplied by a factor of r.
+        I.e. their square module already contain the factor r^2 of
+        the spherical volume element.
+
+        Dimension: mesh_size
+      </xs:documentation> 
+    </xs:annotation>
+     <xs:sequence>
+       <xs:element ref="PP_GIPAW_ORBITAL_AE"/>
+       <xs:element ref="PP_GIPAW_ORBITAL_PS"/>
+     </xs:sequence>
+    <xs:attribute name="index" use="optional" type="xs:integer">
+      <xs:annotation>
+        <xs:documentation>
+          UNDOCUMENTED
+
+          The index n in PP_GIPAW_CORE_ORBITAL.n
+        </xs:documentation> 
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="l" use="required" type="xs:integer">
+      <xs:annotation>
+        <xs:documentation>
+          Angular momentum quantum number of the wave function.
+        </xs:documentation> 
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="n" use="required" type="xs:integer">
+      <xs:annotation>
+        <xs:documentation>
+          Principal quantum number of the wave function.
+        </xs:documentation> 
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="label" use="required" type="upf-nl-label">
+      <xs:annotation>
+        <xs:documentation>
+          A conventional label for the wave function, 
+          such as '2S', '3P', etc.
+        </xs:documentation> 
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="cutoff_radius" use="required" type="xs:double">
+      <xs:annotation>
+        <xs:documentation>
+          Inner norm-conserving cutoff radius.
+          Used as core radius by the GIPAW code.
+        </xs:documentation> 
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="ultrasoft_cutoff_radius" use="optional" type="xs:double">
+      <xs:annotation>
+        <xs:documentation>
+          Outer ultra-soft cutoff radius.
+        </xs:documentation> 
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:element name="PP_GIPAW_ORBITAL_AE" type="upf-data-section">
+    <xs:annotation>
+      <xs:documentation>
+        Contains all-electron valence orbital.
+
+        Note: The orbitals are stored multiplied by a factor of r.
+        I.e. their square module already contain the factor r^2 of
+        the spherical volume element.
+      </xs:documentation> 
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="PP_GIPAW_ORBITAL_PS" type="upf-data-section">
+    <xs:annotation>
+      <xs:documentation>
+        Contains pseudo valence orbital.
+
+        Note: The orbitals are stored multiplied by a factor of r.
+        I.e. their square module already contain the factor r^2 of
+        the spherical volume element.
+      </xs:documentation> 
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="PP_GIPAW_VLOCAL">
+    <xs:annotation>
+      <xs:documentation>
+        Contains the valence pseudo and all-electron orbitals.
+      </xs:documentation> 
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="PP_GIPAW_VLOCAL_AE"/>
+        <xs:element ref="PP_GIPAW_VLOCAL_PS"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="PP_GIPAW_VLOCAL_PS" type="upf-data-section">
+    <xs:annotation>
+      <xs:documentation>
+        Contains pseudo local potential corresponding to GIPAW orbitals.
+
+        Note: The potential is stored multiplied by a factor of r
+              (different from PP_VLOC).
+      </xs:documentation> 
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="PP_GIPAW_VLOCAL_AE" type="upf-data-section">
+    <xs:annotation>
+      <xs:documentation>
+        Contains all-electron local potential corresponding to GIPAW orbitals.
+
+        Note: The potential is stored multiplied by a factor of r
+              (different from PP_VLOC).
+      </xs:documentation> 
+    </xs:annotation>
+  </xs:element>
+
+  <!-- User-defined types -->
+
+  <xs:simpleType name="upf-version-string">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="14"/>
+      <xs:pattern value="[0-9\.]+"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="upf-element">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="2"/>
+      <xs:pattern value="[A-Za-z]+"/>
+      <xs:whiteSpace value="collapse"/>
+    </xs:restriction>
+  </xs:simpleType>
+ 
+  <xs:simpleType name="upf-string">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="80"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="upf-longstring">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="200"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="upf-shortstring">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="20"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="upf-nl-label">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="2"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="upf-pseudotype">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="NC">
+        <xs:annotation>
+          <xs:documentation>norm-conserving</xs:documentation> 
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="SL">
+        <xs:annotation>
+          <xs:documentation>norm-conserving (semi-local form)
+          </xs:documentation> 
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="US">
+        <xs:annotation>
+          <xs:documentation>Vanderbilt's ultrasoft</xs:documentation> 
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="PAW">
+        <xs:annotation>
+          <xs:documentation>Projector-Augmented Wave</xs:documentation> 
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="1/r">
+        <xs:annotation>
+            <xs:documentation>Coulombian 1/r potential</xs:documentation> 
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="upf-relativistic-type">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="no">
+        <xs:annotation>
+          <xs:documentation>non-relativistic calculation</xs:documentation> 
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="scalar">
+        <xs:annotation>
+          <xs:documentation>scalar-relativistic calculation</xs:documentation> 
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="full">
+        <xs:annotation>
+          <xs:documentation>full-relativistic calculation</xs:documentation> 
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="upf-logical">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value=".true."/>
+      <xs:enumeration value="T"/>
+      <xs:enumeration value=".false."/>
+      <xs:enumeration value="F"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="upf-data-type">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="character"/>
+      <xs:enumeration value="logical"/>
+      <xs:enumeration value="integer"/>
+      <xs:enumeration value="real"/>
+      <xs:enumeration value="complex"/>
+    </xs:restriction>
+  </xs:simpleType>
+ 
+  <!-- For some reason, adding mixed="true" still doesn't allow for this
+       type to be extended by a mixed="true" type. -->
+  <xs:complexType name="upf-data-section">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="type" use="required" type="upf-data-type"/>
+        <xs:attribute name="size" use="required" type="xs:integer"/>
+        <xs:attribute name="columns" use="optional" type="xs:integer"
+                      default="4"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+
+</xs:schema>
