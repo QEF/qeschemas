@@ -898,7 +898,6 @@
             <xs:documentation>
               Outer ultrasoft radius used by atomic code in QE.
               Only stored for reconstruction purposes.
-              A conventional label, such as '2S', '3P', etc.
             </xs:documentation> 
           </xs:annotation>
         </xs:attribute>
