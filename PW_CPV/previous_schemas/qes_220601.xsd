@@ -5,7 +5,7 @@ This file is distributed under the terms of the MIT License. See the
 file 'LICENSE' in the root directory of the present distribution, or
 http://opensource.org/licenses/MIT.
 Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
-datecode 220601
+datecode 220603
 -->
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
 	xmlns:qes="http://www.quantum-espresso.org/ns/qes/qes-1.0"
@@ -66,8 +66,8 @@ datecode 220601
       <element type="qes:cell_controlType" name="cell_control"/>
       <element type="qes:symmetry_flagsType" name="symmetry_flags" minOccurs="0" />
       <element type="qes:boundary_conditionsType" name="boundary_conditions" minOccurs="0" />
-      <element type="qes:fcpType" name="fcp" minOccurs="0" />
-      <element type="qes:rismType" name="rism" minOccurs="0" />
+      <element type="qes:fcpType" name="fcp_settings" minOccurs="0" />
+      <element type="qes:rismType" name="rism_settings" minOccurs="0" />
       <element type="qes:solventsType" name="solvents" minOccurs="0" maxOccurs="1"/>
       <element type="qes:ekin_functionalType" name="ekin_functional" minOccurs="0" />
       <element type="qes:matrixType" name="external_atomic_forces" minOccurs="0" />
@@ -649,11 +649,11 @@ datecode 220601
   </simpleType>
   <simpleType name="diagoType">
     <restriction base="string">
-    <enumeration value="davidson"/>
-    <enumeration value="cg"/>
-    <enumeration value="ppcg"/>
-    <enumeration value="paro"/>
-    <enumeration value="rmm(-davidson){0,1}(-paro){01}"/>
+    <pattern value="davidson"/>
+    <pattern value="cg"/>
+    <pattern value="ppcg"/>
+    <pattern value="paro"/>
+    <pattern value="\s*rmm(-davidson|-paro)\s*"/>
     </restriction>
   </simpleType>
   <complexType name="k_points_IBZType">
@@ -737,16 +737,16 @@ datecode 220601
   </complexType>
   <simpleType name="celldofreeType">
     <restriction base="string">
-      <pattern value="all"/>
-      <pattern value="ibrav(\+all)"/>
-      <pattern value="(ibrav\+){0,1}[xyz]"/>
-      <pattern value="(ibrav\+){0,1}x[yz]"/>
-      <pattern value="(ibrav\+)xyz"/>
-      <pattern value="(ibrav\+){0,1}shape"/>
-      <pattern value="(ibrav\+){0,1}volume"/>
-      <pattern value="(ibrav\+){0,1}2Dxy"/> 
-      <pattern value="(ibrav\+){0,1}2DShape"/>
-      <pattern value="(ibrav\+){0,1}epitaxial_[ab][bc]"/>
+      <pattern value="\s*all\s*"/>
+      <pattern value="\s*ibrav(\+all)\s*"/>
+      <pattern value="\s*(ibrav\+){0,1}[xyz]\s*"/>
+      <pattern value="\s*(ibrav\+){0,1}x[yz]\s*"/>
+      <pattern value="\s*(ibrav\+)xyz\s*"/>
+      <pattern value="\s*(ibrav\+){0,1}shape\s*"/>
+      <pattern value="\s*(ibrav\+){0,1}volume\s*"/>
+      <pattern value="\s*(ibrav\+){0,1}2Dxy\s*"/> 
+      <pattern value="\s*(ibrav\+){0,1}2DShape\s*"/>
+      <pattern value="\s*(ibrav\+){0,1}epitaxial_[ab][bc]\s*"/>
     </restriction>
   </simpleType>
   <complexType name="symmetry_flagsType">
