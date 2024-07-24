@@ -10,7 +10,7 @@ datecode 240408
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
 	xmlns:qes="http://www.quantum-espresso.org/ns/qes/qes-1.0"
 	targetNamespace="http://www.quantum-espresso.org/ns/qes/qes-1.0"
-        version= "240411">
+        version= "240408">
   <!-- ESPRESSO (root element) -->
   <element name="espresso" type="qes:espressoType" />
   <complexType name="espressoType">
@@ -238,7 +238,6 @@ datecode 240408
       <element type="qes:cellType" name="cell"/>
     </sequence>
     <attribute type="positiveInteger" name="nat" />
-    <attribute type="integer" name = "num_of_atomic_wfc" use="optional"/>
     <attribute type="double" name="alat" use="optional"/>
     <attribute type="positiveInteger" name="bravais_index" use="optional"/>
       <attribute type="string" name="alternative_axes" use="optional" />
@@ -1003,8 +1002,6 @@ datecode 240408
     <sequence>
       <element type="qes:scf_convType" name="scf_conv"/>
       <element type="qes:opt_convType" name="opt_conv" minOccurs="0"/>
-      <!-- element optional for back-compatibility but always present--> 
-      <element type="boolean" name="wf_collected" minOccurs="0"/> 
     </sequence>
   </complexType>
   <complexType name="scf_convType">
@@ -1110,11 +1107,8 @@ datecode 240408
       <element type="nonNegativeInteger" name="nbnd_up" minOccurs="0" />
       <element type="nonNegativeInteger" name="nbnd_dw" minOccurs="0" />
       <element type="double" name="nelec"/>
-      <!-- wf_collected and num_of_atomic_wfc are kept as optional for back-compatibility but never more used, 
-        they are removed from the fortran type to work around a bug of Intel <21.0.3 
-        comment the 2 lines below before building the qes_modules-->  
       <element type="integer" name = "num_of_atomic_wfc" minOccurs = "0"/>
-      <element type="boolean" name = "wf_collected" minOccurs="0"/>
+      <element type="boolean" name = "wf_collected" />
       <element type="double" name="fermi_energy" minOccurs="0" />
       <element type="double" name="highestOccupiedLevel" minOccurs ="0"/>
       <element type="double" name="lowestUnoccupiedLevel" minOccurs="0"/>
