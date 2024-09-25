@@ -1,24 +1,28 @@
 <?xml version="1.0"?>
 <!--
-Copyright (c), 2015-2016, Quantum Espresso Foundation. All rights reserved.
+Copyright (c), 2021-2024, Quantum Espresso Foundation. All rights reserved.
 This file is distributed under the terms of the MIT License. See the
 file 'LICENSE' in the root directory of the present distribution, or
 http://opensource.org/licenses/MIT.
 Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
+datecode 240913
 -->
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
 	xmlns:qes="http://www.quantum-espresso.org/ns/qes/qes-1.0"
-	targetNamespace="http://www.quantum-espresso.org/ns/qes/qes-1.0">
+	targetNamespace="http://www.quantum-espresso.org/ns/qes/qes-1.0"
+        version= "240411">
   <!-- ESPRESSO (root element) -->
   <element name="espresso" type="qes:espressoType" />
   <complexType name="espressoType">
     <sequence>
       <element type="qes:general_infoType" name="general_info" minOccurs="0" />
       <element type="qes:parallel_infoType" name="parallel_info" minOccurs="0" />
-      <element type="qes:inputType" name="input" />
+      <element type="qes:inputType" name="input" minOccurs="0"/>
       <element type="qes:stepType" name="step" minOccurs="0" maxOccurs="unbounded" />
       <element type="qes:outputType" name="output" minOccurs="0" />
-      <element type="qes:statusType" name="status" minOccurs="0" />
+      <element type="qes:cpstatusType" name="STATUS" minOccurs="0"/>
+      <element type="qes:cptimestepsType" name="TIMESTEPS" minOccurs="0"/>
+      <element type="qes:statusType" name="exit_status"  minOccurs="0" maxOccurs="1"/>
       <choice minOccurs="1">
         <element type="nonNegativeInteger" name="cputime" minOccurs="0"/>
         <element type="qes:timingType" name="timing_info" minOccurs="0"/>
@@ -63,6 +67,9 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
       <element type="qes:cell_controlType" name="cell_control"/>
       <element type="qes:symmetry_flagsType" name="symmetry_flags" minOccurs="0" />
       <element type="qes:boundary_conditionsType" name="boundary_conditions" minOccurs="0" />
+      <element type="qes:fcpType" name="fcp_settings" minOccurs="0" />
+      <element type="qes:rismType" name="rism_settings" minOccurs="0" />
+      <element type="qes:solventsType" name="solvents" minOccurs="0" maxOccurs="1"/>
       <element type="qes:ekin_functionalType" name="ekin_functional" minOccurs="0" />
       <element type="qes:matrixType" name="external_atomic_forces" minOccurs="0" />
       <element type="qes:integerMatrixType" name="free_positions" minOccurs="0" />
@@ -70,6 +77,7 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
       <element type="qes:electric_fieldType" name="electric_field" minOccurs="0" />
       <element type="qes:atomic_constraintsType" name="atomic_constraints" minOccurs="0" />
       <element type="qes:spin_constraintsType" name="spin_constraints" minOccurs="0" />
+      <element type="qes:two_chemType" name="twoch_" minOccurs="0"/> 
     </sequence>
   </complexType>
   <!-- STEP TYPE -->
@@ -80,8 +88,8 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
       <element type="qes:total_energyType" name="total_energy"/>
       <element type="qes:matrixType" name="forces"/>
       <element type="qes:matrixType" name="stress" minOccurs="0" />
-      <element type="double"         name="FCP_force" minOccurs="0"/>
-      <element type="double"         name="FCP_tot_charge" minOccurs ="0"/>
+      <element type="double"         name="fcp_force" minOccurs="0"/>
+      <element type="double"         name="fcp_tot_charge" minOccurs ="0"/>
     </sequence>
     <attribute type="positiveInteger" name="n_step"/>
   </complexType>
@@ -96,14 +104,16 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
       <element type="qes:basis_setType" name="basis_set"/>
       <element type="qes:dftType" name="dft"/>
       <element type="qes:outputPBCType" name="boundary_conditions" minOccurs="0" />
-      <element type="qes:magnetizationType" name="magnetization"/>
+      <element type="qes:magnetizationType" name="magnetization" minOccurs="0"/>
       <element type="qes:total_energyType" name="total_energy"/>
       <element type="qes:band_structureType" name="band_structure"/>
       <element type="qes:matrixType" name="forces" minOccurs="0"/>
       <element type="qes:matrixType" name="stress" minOccurs="0" />
       <element type="qes:outputElectricFieldType" name="electric_field" minOccurs="0" />
-      <element type="double"  name="FCP_force" minOccurs="0"/>
-      <element type="double"  name="FCP_tot_charge" minOccurs="0"/>
+      <element type="double"  name="fcp_force" minOccurs="0"/>
+      <element type="double"  name="fcp_tot_charge" minOccurs="0"/>
+      <element type="qes:rism3dType" name="rism3d" minOccurs="0" />
+      <element type="qes:rismlaueType" name="rismlaue" minOccurs="0" />
     </sequence>
   </complexType>
   <!-- Timing Info -->
@@ -141,6 +151,8 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
       <element type="double" name="press_conv_thr" default="5e-1"/>
       <element type="qes:lowhighType" name="verbosity" default="low"/>
       <element type="positiveInteger" name="print_every"/>
+       <element type="boolean" name="fcp"/>
+      <element type="boolean" name="rism"/>    
     </sequence>
   </complexType>
   <!-- COMMON TYPES -->
@@ -191,6 +203,11 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
   	<restriction base="string">
   	  <enumeration value="low"/>
   	  <enumeration value="high"/>
+      <enumeration value="medium"/>
+      <enumeration value="minimum"/>
+      <enumeration value="debug"/>
+      <enumeration value="none"/>
+      <enumeration value="nowf"/>
   	</restriction>
   </simpleType>
   <!-- INPUT TYPE -->
@@ -221,9 +238,10 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
       <element type="qes:cellType" name="cell"/>
     </sequence>
     <attribute type="positiveInteger" name="nat" />
+    <attribute type="integer" name = "num_of_atomic_wfc" use="optional"/>
     <attribute type="double" name="alat" use="optional"/>
     <attribute type="positiveInteger" name="bravais_index" use="optional"/>
-      <attribute type="boolean" name="use_alternative_axes" use="optional" default="false" />
+      <attribute type="string" name="alternative_axes" use="optional" />
   </complexType>
   <complexType name="atomic_positionsType">
     <sequence>
@@ -263,30 +281,42 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
   </complexType>
   <simpleType name="functionalType">
     <restriction base="string">
-    <enumeration value="PZ"/>
-    <enumeration value="BP"/>
-    <enumeration value="PBE"/>
-    <enumeration value="REVPBE"/>
-    <enumeration value="PBESOL"/>
-    <enumeration value="BLYP"/>
-    <enumeration value="OLYP"/>
-    <enumeration value="PW91"/>
-    <enumeration value="WC"/>
-    <enumeration value="SOGGA"/>
-    <enumeration value="EV93"/>
-    <enumeration value="B3LYP"/>
-    <enumeration value="GauPBE"/>
-    <enumeration value="PBE0"/>
-    <enumeration value="HSE"/>
-    <enumeration value="VDW-DF"/>
-    <enumeration value="VDW-DF-CX"/>
-    <enumeration value="VDW-DF-C09"/>
-    <enumeration value="VDW-DF-OB86"/>
-    <enumeration value="VDW-DF-OBK8"/>
-    <enumeration value="VDW-DF2"/>
-    <enumeration value="VDW-DF2-C09"/>
-    <enumeration value="VDW-DF2-B86R"/>
-    <enumeration value="RVV10"/>
+    <pattern value="[pP][zZ]"/>
+    <pattern value="[bB][pP]"/>
+    <pattern value="[pP][bB][eE]"/>
+    <pattern value="[rR][rE][vV][pP][bB][eE]"/>
+    <pattern value="[pP][bB][eE][sS][oO][lL]"/>
+    <pattern value="[bB][lL][yY][pP]"/>
+    <pattern value="[oO][lL][yY][pP]"/>
+    <pattern value="[pP][wW]91"/>
+    <pattern value="[wW][cC]"/>
+    <pattern value="[sS][oO][gG][gG][aA]"/>
+    <pattern value="[eE][vV]93"/>
+    <pattern value="[bB]3[lL][yY][pP]"/>
+    <pattern value="[gG][aA][uU][pP][bB][eE]"/>
+    <pattern value="[pP][bB][eE]0"/>
+    <pattern value="[hH][sS][eE]"/>
+    <pattern value="[vV][dD][wW]-[dD][fF]"/>
+    <pattern value="[vV][dD][wW]-[dD][fF]-CX"/>
+    <pattern value="[vV][dD][wW]-[dD][fF]-[cC]09"/>
+    <pattern value="[vV][dD][wW]-[dD][fF]-[oO][bB]86"/>
+    <pattern value="[vV][dD][wW]-[dD][fF]-[oO][bB][kK]8"/>
+    <pattern value="[vV][dD][wW]-[dD][fF]2"/>
+    <pattern value="[vV][dD][wW]-[dD][fF]2-[cC]09"/>
+    <pattern value="[vV][dD][wW]-[dD][fF]2-[bB]86[rR]"/>
+    <pattern value="[rR][vV][vV]10"/>
+    <pattern value="[rR][sS][cC][aA][nN]"/>
+    <pattern value="[bB][eE][eE][fF]"/>
+    <pattern value="[sS][Cc][Aa][nN]"/> 
+    <pattern value="[rR]2[sS][cC][aA][nN]"/> 
+    <pattern value="[A-Z]{2,4}\p{Zs}{1,3}[A-Z]{1,4}\p{Zs}{1,3}[A-Z]{1,4}\p{Zs}{1,4}[A-Z]{1,4}"/>
+    <pattern value=".*[xX][cC]_[lL][Dd][Aa]_[xX][cC]?_.*"/>
+    <pattern value=".*[xX][cC]_[mM]?[gG][Gg][Aa]_[xX][cC]?_.*"/>
+    <pattern value=".*[xX][cC]_[hH][yY][bB]_[mM]?[gG][Gg][Aa]_[xX][cC]?_.*"/>
+    <pattern value=".*[xX][cC]_[lL][Dd][Aa]_[cC]_.*"/>
+    <pattern value=".*[xX][cC]_[mM]?[gG][Gg][Aa]_[kKcC]_.*"/>
+    <pattern value=".*[xX][cC]_[hH][yY][bB]_[mM]?[gG][Gg][Aa]_[kKcC]?_.*"/>
+    <pattern value="XC(-[0-9][0-9][0-9][iL]){6}"/>
     </restriction>
   </simpleType>
 
@@ -314,22 +344,21 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
   <complexType name="dftUType">
     <sequence>
       <element type="unsignedByte" name="lda_plus_u_kind" minOccurs="0"/>
+      <element type="qes:HubbardOccType" name="Hubbard_Occ" minOccurs="0" maxOccurs="unbounded"/>
       <element type="qes:HubbardCommonType" name="Hubbard_U" minOccurs="0" maxOccurs="unbounded"/>
       <element type="qes:HubbardCommonType" name="Hubbard_J0" minOccurs="0" maxOccurs="unbounded"/>
       <element type="qes:HubbardCommonType" name="Hubbard_alpha" minOccurs="0" maxOccurs="unbounded"/>
       <element type="qes:HubbardCommonType" name="Hubbard_beta" minOccurs="0" maxOccurs="unbounded"/>
       <element type="qes:HubbardJType" name="Hubbard_J" minOccurs="0" maxOccurs="unbounded"/>
       <element type="qes:starting_nsType" name="starting_ns" minOccurs="0" maxOccurs="unbounded"/>
+      <element type="qes:HubbardInterSpecieVType" name="Hubbard_V" minOccurs="0" maxOccurs="unbounded"/> 
       <element type="qes:Hubbard_nsType" name="Hubbard_ns" minOccurs="0" maxOccurs="unbounded"/>
       <element type="qes:HubbardProjType" name="U_projection_type" minOccurs="0"/>
       <element type="qes:HubbardBackType"  name="Hubbard_back"  minOccurs="0" maxOccurs="unbounded"/>
-      <element type="qes:HubbardCommonType" name="Hubbard_back_U" minOccurs="0" maxOccurs="unbounded"/>
-      <element type="qes:HubbardCommonType" name="Hubbard_back_alpha" minOccurs="0" maxOccurs="unbounded"/>
-      <!-- removed for the moment 
-      <element type="qes:matrixType" name="Hubbard_V" minOccurs="0" maxOccurs="1"/>
-      <element type="qes:matrixType" name="Hubbard_nsg" minOccurs="0" maxOccurs="1"/>
-      <element type="qes:Hubbard_nsType" name="Hubbard_ns_back" minOccurs="0" maxOccurs="unbounded"/  --!>
+      <element type="qes:HubbardCommonType" name="Hubbard_alpha_back" minOccurs="0" maxOccurs="unbounded"/>
+      <element type="qes:Hubbard_nsType" name="Hubbard_ns_nc" minOccurs="0" maxOccurs="unbounded"/>
     </sequence>
+    <attribute type="boolean" name="new_format"/>
   </complexType>
   <complexType name="HubbardCommonType">
     <simpleContent>
@@ -339,11 +368,55 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
       </extension>
     </simpleContent>
   </complexType>
+  <complexType name="HubbardInterSpecieVType">
+    <simpleContent>
+      <extension base="double">
+        <attribute type ="string" name="specie1" use="required"/>
+        <attribute type="integer" name="index1" use="required" />
+        <attribute type ="string" name="label1" />
+        <attribute type="string"  name="specie2" use="required"/>
+        <attribute type="integer" name="index2" use="required"/>  
+        <attribute type="string"  name="label2"/>
+      </extension>
+    </simpleContent>
+  </complexType>
+  <complexType name="SiteMomentType">
+    <simpleContent>
+      <extension base="double">
+        <attribute type="string"  name="species"/>
+        <attribute type="integer" name="atom"/>
+        <attribute type="double"  name="charge"/>
+      </extension>
+    </simpleContent>
+  </complexType>
   <complexType name="HubbardJType">
     <simpleContent>
       <extension base="qes:d3vectorType">
         <attribute type="string" name="specie"/>
         <attribute type="string" name="label"/>
+      </extension>
+    </simpleContent>
+  </complexType>
+  <complexType name="ChannelOccType">
+    <simpleContent>
+      <extension base="qes:HubbardCommonType">
+        <attribute type="integer" name="index" use="required" />
+      </extension>
+    </simpleContent>
+  </complexType>
+  <complexType name="HubbardOccType">
+    <sequence>
+      <element type="qes:ChannelOccType" name="channel_occ" minOccurs="1" maxOccurs="3"/>
+    </sequence>
+    <attribute type="positiveInteger" name="channels" use="required" />
+    <attribute type="string" name="specie" use="required"/> 
+  </complexType>
+  <complexType name="SitMagType">
+    <simpleContent>
+      <extension base="qes:d3vectorType">
+        <attribute type="string" name="species"/>
+        <attribute type="integer" name="atom"/>
+        <attribute type="double" name="charge"/>
       </extension>
     </simpleContent>
   </complexType>
@@ -368,35 +441,40 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
   </complexType>
   <simpleType name="HubbardProjType">
      <restriction base="string">
-        <enumeration value="atomic"/>
+         <enumeration value="atomic"/>
         <enumeration value="ortho-atomic"/>
         <enumeration value="norm-atomic"/>
         <enumeration value="pseudo"/>
         <enumeration value="file"/>
+        <enumeration value="wf"/>
+        <enumeration value="wannier"/>
      </restriction>
   </simpleType>
   <complexType name="HubbardBackType">
     <sequence>
-      <element type="string" name="background" minOccurs="1" maxOccurs="1"/>
-      <element type="qes:backrestrType" name="label" minOccurs="1" maxOccurs="unbounded"/>
+      <element type="double" name="Hubbard_U2" minOccurs="1" maxOccurs="1" />
+      <element type="positiveInteger" name="n2_number" minOccurs="1" maxOccurs="1"/>
+      <element type="positiveInteger" name="l2_number" minOccurs="1" maxOccurs="1"/>
+      <element type="positiveInteger" name="n3_number" minOccurs="0" maxOccurs="1"/>
+      <element type="positiveInteger" name="l3_number" minOccurs="0" maxOccurs="1"/>
     </sequence>
+    <attribute type="qes:backrestrType" name="background" use="required"/>
+    <attribute type='string' name="label"/> 
     <attribute type="string" name="species"/>
   </complexType>
-  <complexType name="backrestrType">
-    <simpleContent>
+  <simpleType name="backrestrType">
     <restriction base="string">
-      <enumeration value="two_channels"/>
-      <enumeration value="one_channel"/>
+      <enumeration value="two_orbitals"/>
+      <enumeration value="one_orbital"/>
     </restriction>
-    </simpleContent>
-  </complexType>
+  </simpleType>
   <complexType name="vdWType">
     <sequence>
       <element type="string" name = "vdw_corr" minOccurs = "0"/>
       <element type="integer" name="dftd3_version" minOccurs="0"/>
       <element type="boolean" name="dftd3_threebody" minOccurs="0"/>
       <element type="string" name = "non_local_term" minOccurs = "0" />
-      <element type="string" name = "functional" minOccurs = "0"/>
+       <element type="string" name = "functional" minOccurs = "0"/>
       <element type="double" name="total_energy_term" minOccurs = "0"/>
       <element type="double" name="london_s6" minOccurs="0"/>
       <element type="double" name ="ts_vdw_econv_thr" minOccurs="0" maxOccurs="1"/>
@@ -494,6 +572,7 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
       <element type="double" name="conv_thr"/>
       <element type="positiveInteger" name="mixing_ndim"/>
       <element type="positiveInteger" name="max_nstep"/>
+      <element type="positiveInteger" name="exx_nstep" minOccurs="0"/> 
       <element type="boolean" name="real_space_q" minOccurs="0" default="false" />
       <element type="boolean" name="real_space_beta" minOccurs="0" default ="false"/>
       <element type="boolean" name="tq_smoothing"/>
@@ -503,6 +582,91 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
       <element type="nonNegativeInteger" name="diago_cg_maxiter" minOccurs="0"/>
       <element type="nonNegativeInteger" name="diago_ppcg_maxiter" minOccurs="0"/>
       <element type="positiveInteger" name="diago_david_ndim"    minOccurs="0"/>
+      <element type="positiveInteger" name="diago_rmm_ndim" minOccurs="0" default="4" />
+      <element type="positiveInteger" name="diago_gs_nblock" minOccurs="0" default="16"/>
+      <element type=" boolean" name="diago_rmm_conv" minOccurs="0" default="false"/> 
+    </sequence>
+  </complexType>
+  <complexType name="fcpType">
+    <sequence>
+      <element type="double" name="fcp_mu" minOccurs="0"/>
+      <element type="string" name="fcp_dynamics" minOccurs="0"/>
+      <element type="double" name="fcp_conv_thr" minOccurs="0"/>
+      <element type="integer" name="fcp_ndiis" minOccurs="0"/>
+      <element type="double" name="fcp_rdiis" minOccurs="0"/>
+      <element type="double" name="fcp_mass" minOccurs="0"/>
+      <element type="double" name="fcp_velocity" minOccurs="0"/>
+      <element type="string" name="fcp_temperature" minOccurs="0"/>
+      <element type="double" name="fcp_tempw" minOccurs="0"/>
+      <element type="double" name="fcp_tolp" minOccurs="0"/>
+      <element type="double" name="fcp_delta_t" minOccurs="0"/>
+      <element type="integer" name="fcp_nraise" minOccurs="0"/>
+      <element type="boolean" name="freeze_all_atoms" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="rismType">
+    <sequence>
+      <element type="integer" name="nsolv" minOccurs="1"/>
+      <element type="qes:soluteType"   name="solute" minOccurs="1" maxOccurs="unbounded" />
+      <element type="string"  name="closure" minOccurs="0"/>
+      <element type="double"  name="tempv" minOccurs="0"/>
+      <element type="double"  name="ecutsolv" minOccurs="0"/>
+      <element type="double"  name="rmax_lj" minOccurs="0"/>
+      <element type="double"  name="rmax1d" minOccurs="0"/>
+      <element type="string"  name="starting1d" minOccurs="0"/>
+      <element type="string"  name="starting3d" minOccurs="0"/>
+      <element type="double"  name="smear1d" minOccurs="0"/>
+      <element type="double"  name="smear3d" minOccurs="0"/>
+      <element type="integer" name="rism1d_maxstep" minOccurs="0"/>
+      <element type="integer" name="rism3d_maxstep" minOccurs="0"/>
+      <element type="double"  name="rism1d_conv_thr" minOccurs="0"/>
+      <element type="double"  name="rism3d_conv_thr" minOccurs="0"/>
+      <element type="integer" name="mdiis1d_size" minOccurs="0"/>
+      <element type="integer" name="mdiis3d_size" minOccurs="0"/>
+      <element type="double"  name="mdiis1d_step" minOccurs="0"/>
+      <element type="double"  name="mdiis3d_step" minOccurs="0"/>
+      <element type="double"  name="rism1d_bond_width" minOccurs="0"/>
+      <element type="double"  name="rism1d_dielectric" minOccurs="0"/>
+      <element type="double"  name="rism1d_molesize" minOccurs="0"/>
+      <element type="integer" name="rism1d_nproc" minOccurs="0"/>
+      <element type="integer" name="rism1d_nproc_switch" minOccurs="0"/>
+      <element type="double"  name="rism3d_conv_level" minOccurs="0"/>
+      <element type="boolean" name="rism3d_planar_average" minOccurs="0"/>
+      <element type="integer" name="laue_nfit" minOccurs="0"/>
+      <element type="double"  name="laue_expand_right" minOccurs="0"/>
+      <element type="double"  name="laue_expand_left" minOccurs="0"/>
+      <element type="double"  name="laue_starting_right" minOccurs="0"/>
+      <element type="double"  name="laue_starting_left" minOccurs="0"/>
+      <element type="double"  name="laue_buffer_right" minOccurs="0"/>
+      <element type="double"  name="laue_buffer_right_solu" minOccurs="0"/>
+      <element type="double"  name="laue_buffer_right_solv" minOccurs="0"/>
+      <element type="double"  name="laue_buffer_left" minOccurs="0"/>
+      <element type="double"  name="laue_buffer_left_solu" minOccurs="0"/>
+      <element type="double"  name="laue_buffer_left_solv" minOccurs="0"/>
+      <element type="boolean" name="laue_both_hands" minOccurs="0"/>
+      <element type="string"  name="laue_reference" minOccurs="0"/>
+      <element type="string"  name="laue_wall" minOccurs="0"/>
+      <element type="double"  name="laue_wall_z" minOccurs="0"/>
+      <element type="double"  name="laue_wall_rho" minOccurs="0"/>
+      <element type="double"  name="laue_wall_epsilon" minOccurs="0"/>
+      <element type="double"  name="laue_wall_sigma" minOccurs="0"/>
+      <element type="boolean" name="laue_wall_lj6" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="soluteType">
+    <sequence>
+      <element type="string" name="solute_lj" minOccurs="1"/>
+      <element type="double" name="epsilon" minOccurs="1"/>
+      <element type="double" name="sigma" minOccurs="1"/>
+    </sequence>
+  </complexType>
+  <complexType name="solventType">
+    <sequence>
+      <element type="string" name="label" minOccurs="1"/>
+      <element type="string" name="molec_file" minOccurs="1"/>
+      <element type="double" name="density1" minOccurs="1"/>
+      <element type="double" name="density2" minOccurs="0"/>
+      <element type="string" name="unit" minOccurs="0"/>
     </sequence>
   </complexType>
   <simpleType name="mixingModeType">
@@ -514,9 +678,11 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
   </simpleType>
   <simpleType name="diagoType">
     <restriction base="string">
-    <enumeration value="davidson"/>
-    <enumeration value="cg"/>
-    <enumeration value="ppcg"/>
+    <pattern value="davidson"/>
+    <pattern value="cg"/>
+    <pattern value="ppcg"/>
+    <pattern value="paro"/>
+    <pattern value="\s*rmm(-davidson|-paro)\s*"/>
     </restriction>
   </simpleType>
   <complexType name="k_points_IBZType">
@@ -586,12 +752,32 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
       <element type="double" name="pressure" default="0.0" />
       <element type="double" name="wmass" minOccurs="0" />
       <element type="double" name="cell_factor" minOccurs="0" />
-      <element type="boolean" name="fix_volume" minOccurs="0" />
-      <element type="boolean" name="fix_area"   minOccurs="0" />
-      <element type="boolean" name="isotropic" minOccurs="0" />
-      <element type="qes:integerMatrixType" name="free_cell" minOccurs="0" />
+      <choice minOccurs="0" maxOccurs="1">
+        <element  type="qes:celldofreeType" name="cell_do_free"  minOccurs="0"/>
+        <sequence>
+          <!-- legacy deprecated choice --> 
+          <element type="boolean" name="fix_volume" minOccurs="0" />
+          <element type="boolean" name="fix_area"   minOccurs="0" />
+          <element type="boolean" name="isotropic" minOccurs="0" />
+          <element type="qes:integerMatrixType" name="free_cell" minOccurs="0" />
+        </sequence>
+      </choice>
     </sequence>
   </complexType>
+  <simpleType name="celldofreeType">
+    <restriction base="string">
+      <pattern value="\s*all\s*"/>
+      <pattern value="\s*ibrav(\+all)\s*"/>
+      <pattern value="\s*(ibrav\+){0,1}[xyz]\s*"/>
+      <pattern value="\s*(ibrav\+){0,1}x[yz]\s*"/>
+      <pattern value="\s*(ibrav\+)xyz\s*"/>
+      <pattern value="\s*(ibrav\+){0,1}shape\s*"/>
+      <pattern value="\s*(ibrav\+){0,1}volume\s*"/>
+      <pattern value="\s*(ibrav\+){0,1}2Dxy\s*"/> 
+      <pattern value="\s*(ibrav\+){0,1}2DShape\s*"/>
+      <pattern value="\s*(ibrav\+){0,1}epitaxial_[ab][bc]\s*"/>
+    </restriction>
+  </simpleType>
   <complexType name="symmetry_flagsType">
     <sequence>
       <element type="boolean" name="nosym"/>
@@ -606,16 +792,34 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
     <sequence>
       <element type="string" name="assume_isolated"/>
       <element type="qes:esmType" name="esm" minOccurs = "0"/>
-      <element type="boolean"     name="fcp_opt" minOccurs = "0"/>
-      <element type="double" name="fcp_mu" minOccurs ="0" />
+      <element type="qes:gcscfType" name="gcscf" minOccurs = "0"/>
     </sequence>
   </complexType>
   <complexType name="esmType">
     <sequence>
       <element type="string" name="bc"/>
-      <element type="positiveInteger" name="nfit"/>
-      <element type="double" name="w"/>
-      <element type="double" name="efield"/>
+      <element type="positiveInteger" name="nfit" minOccurs = "0"/>
+      <element type="double" name="w" minOccurs = "0"/>
+      <element type="double" name="efield" minOccurs = "0"/>
+      <element type="double" name="a" minOccurs = "0"/>
+      <element type="double" name="zb" minOccurs = "0"/>
+      <element type="boolean" name="debug" minOccurs = "0"/>
+      <element type="integer" name="debug_gpmax" minOccurs = "0"/>
+    </sequence>
+  </complexType>
+  <complexType name="gcscfType">
+    <sequence>
+      <element type="boolean" name="ignore_mun" minOccurs = "0"/>
+      <element type="double" name="mu" minOccurs = "0"/>
+      <element type="double" name="conv_thr" minOccurs = "0"/>
+      <element type="double" name="gk" minOccurs = "0"/>
+      <element type="double" name="gh" minOccurs = "0"/>
+      <element type="double" name="beta" minOccurs = "0"/>
+    </sequence>
+  </complexType>
+  <complexType name="solventsType">
+    <sequence>
+      <element type="qes:solventType"  name="solvent" minOccurs="1" maxOccurs="unbounded" />
     </sequence>
   </complexType>
   <complexType name="ekin_functionalType">
@@ -676,7 +880,7 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
      <sequence>
         <element type="qes:constr_parms_listType" name="constr_parms" />
         <element type="qes:constr_typeType" name="constr_type"/>
-        <element type="double"  name="constr_target" />
+        <element type="double"  name="constr_target" minOccurs="0"/>
      </sequence>
   </complexType>
   <simpleType name="constr_parms_listType">
@@ -684,7 +888,8 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
        <simpleType>
          <list itemType="double"/>
        </simpleType>
-       <length value="4"/>
+       <minLength value="2"/>
+       <maxLength value="4"/> 
     </restriction>
   </simpleType>
 
@@ -696,6 +901,7 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
         <enumeration value="planar_angle"/>
         <enumeration value="torsional_angle"/>
         <enumeration value="bennet_proj"/>
+	<enumeration value="potential_wall"/> 
      </restriction>
   </simpleType>
 
@@ -797,6 +1003,8 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
     <sequence>
       <element type="qes:scf_convType" name="scf_conv"/>
       <element type="qes:opt_convType" name="opt_conv" minOccurs="0"/>
+      <!-- element optional for back-compatibility but always present--> 
+      <element type="boolean" name="wf_collected" minOccurs="0"/> 
     </sequence>
   </complexType>
   <complexType name="scf_convType">
@@ -824,6 +1032,7 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
   <complexType name="symmetriesType">
     <sequence>
       <element type="unsignedByte" name="nsym"/>
+      <element type="integer" name="colin_mag" minOccurs="0"/>
       <element type="unsignedByte" name="nrot"/>
       <element type="unsignedByte" name="space_group"/>
       <element type="qes:symmetryType" name="symmetry" maxOccurs="48" minOccurs="1"/>
@@ -856,6 +1065,7 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
   <complexType name="outputPBCType">
     <sequence>
       <element type="string" name="assume_isolated"/>
+      <element type="qes:esmType" name="esm" minOccurs = "0"/>
     </sequence>
   </complexType>
   <complexType name="magnetizationType">
@@ -863,9 +1073,16 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
       <element type="boolean" name="lsda"/>
       <element type="boolean" name="noncolin"/>
       <element type="boolean" name="spinorbit"/>
-      <element type="double"  name="total"/>
+      <choice>
+        <element type="double"  name="total" minOccurs="0"/>
+        <element type="qes:d3vectorType" name="total_vec" minOccurs="0"/>
+      </choice>
       <element type="double"  name="absolute"/>
-      <element type="boolean" name="do_magnetization"/>
+      <choice minOccurs="0" maxOccurs="1">
+        <element  type="qes:scalmagsType" name="Scalar_Site_Magnetic_Moments" minOccurs="0"/>
+        <element  type="qes:d3magsType"   name="Site_Magnetizations" minOccurs="0"/>
+      </choice>
+      <element type="boolean" name="do_magnetization" minOccurs="0"/>
     </sequence>
   </complexType>
   <complexType name="total_energyType">
@@ -881,6 +1098,8 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
       <element type="double" name="potentiostat_contr" minOccurs="0"/>
       <element type="double" name="gatefield_contr" minOccurs="0"/>
       <element type="double" name="vdW_term" minOccurs="0"/>
+      <element type="double" name="esol" minOccurs="0"/>
+      <element type="double" name="levelshift_contr" minOccurs="0"/>
     </sequence>
   </complexType>
   <complexType name="band_structureType">
@@ -892,11 +1111,15 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
       <element type="nonNegativeInteger" name="nbnd_up" minOccurs="0" />
       <element type="nonNegativeInteger" name="nbnd_dw" minOccurs="0" />
       <element type="double" name="nelec"/>
+      <!-- wf_collected and num_of_atomic_wfc are kept as optional for back-compatibility but never more used, 
+        they are removed from the fortran type to work around a bug of Intel <21.0.3 
+        comment the 2 lines below before building the qes_modules-->  
       <element type="integer" name = "num_of_atomic_wfc" minOccurs = "0"/>
-      <element type="boolean" name = "wf_collected" />
+      <element type="boolean" name = "wf_collected" minOccurs="0"/>
       <element type="double" name="fermi_energy" minOccurs="0" />
       <element type="double" name="highestOccupiedLevel" minOccurs ="0"/>
       <element type="double" name="lowestUnoccupiedLevel" minOccurs="0"/>
+      <element type="qes:two_chemType" name="twochem" minOccurs="0"/>
       <element name="two_fermi_energies" type="qes:d2vectorType" minOccurs="0"/>
       <element type="qes:k_points_IBZType" name="starting_k_points" />
       <element type="positiveInteger" name="nks"/>
@@ -921,6 +1144,115 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
       </extension>
     </simpleContent>
   </complexType>
+  <complexType name="cpstatusType">
+    <sequence>
+      <element type="qes:cpnumstepType" name="STEP" minOccurs="1" maxOccurs="1"/>
+      <element type="qes:scalarQuantityType" name="TIME" minOccurs="1" maxOccurs="1"/>
+      <element type="string" name="TITLE" minOccurs="1"/>
+      <element type="qes:scalarQuantityType" name="KINETIC_ENERGY" minOccurs="1"/>
+      <element type="qes:scalarQuantityType" name="HARTREE_ENERGY" minOccurs="1"/>
+      <element type="qes:scalarQuantityType" name="EWALD_TERM" minOccurs="1"/>
+      <element type="qes:scalarQuantityType" name="GAUSS_SELFINT" minOccurs="1"/>
+      <element type="qes:scalarQuantityType" name="LPSP_ENERGY" minOccurs="1"/>
+      <element type="qes:scalarQuantityType" name="NLPSP_ENERGY" minOccurs="1"/>
+      <element type="qes:scalarQuantityType" name="EXC_ENERGY" minOccurs="1"/>
+      <element type="qes:scalarQuantityType" name="AVERAGE_POT" minOccurs="1"/>
+      <element type="qes:scalarQuantityType" name="ENTHALPY" minOccurs="1"/>
+    </sequence>
+  </complexType>
+
+
+  <complexType name="cpnumstepType">
+    <simpleContent>
+      <extension base="qes:emptyType">
+        <attribute name="ITERATION" type="integer"/>
+      </extension>
+    </simpleContent>
+  </complexType>
+
+
+  <simpleType name="emptyType">
+    <restriction base="string">
+      <enumeration value=""/>
+      <enumeration value="iteration number"/> 
+    </restriction>
+  </simpleType>
+
+  <complexType name="cptimestepsType">
+    <sequence>
+      <element name="STEP0" type="qes:cpstepType" minOccurs="1"/>
+      <element name="STEPM" type="qes:cpstepType" minOccurs="1"/>
+    </sequence>
+    <attribute name="nt" type="integer"/>
+  </complexType>
+
+  <complexType name="cpstepType">
+    <sequence>
+      <element name="ACCUMULATORS" type="qes:doubleListType" minOccurs="0"/>
+      <element name="IONS_POSITIONS" type="qes:cp_ionPosType" minOccurs="1"/>
+      <element name="IONS_NOSE" type="qes:cp_ionsNoseType" minOccurs="1"/>
+      <element name="ekincm" type="double" minOccurs="0"/>
+      <element name="ELECTRONS_NOSE" type="qes:cp_elecNoseType" minOccurs="1"/>
+      <element name="CELL_PARAMETERS" type="qes:cp_cellType" minOccurs="1"/>
+      <element name="CELL_NOSE" type="qes:cp_cellNoseType" minOccurs="1"/>
+    </sequence>
+  </complexType>
+  
+  <complexType name="cp_ionPosType">
+    <sequence>
+      <element name="stau" type="qes:doubleListType" minOccurs="1"/>
+      <element name="svel" type="qes:doubleListType" minOccurs="1"/>
+      <element name="taui" type="qes:doubleListType" minOccurs="0"/>
+      <element name ="cdmi" type="qes:d3vectorType" minOccurs="0"/>
+      <element name="force" type="qes:doubleListType" minOccurs="0"/>
+    </sequence>
+  </complexType>
+
+  <complexType name="cp_ionsNoseType">
+    <sequence>
+      <element type="integer" name="nhpcl" minOccurs="1"/>
+      <element type="integer" name="nhpdim" minOccurs="1"/>
+      <element type="double" name="xnhp" minOccurs="1"/>
+      <element type="double" name="vnhp" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  
+  <complexType name="cp_elecNoseType">
+    <sequence>
+      <element name="xnhe" type="double" minOccurs="1"/>
+      <element name="vnhe" type="double" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  
+  <complexType name="cp_cellType">
+    <sequence>
+      <element name="ht" type="qes:doubleListType" minOccurs="1"/>
+      <element name="htvel" type="qes:doubleListType" minOccurs="0"/>
+      <element name="gvel" type="qes:doubleListType" minOccurs="0"/>
+    </sequence>
+  </complexType>
+
+  <complexType name="cp_cellNoseType">
+    <sequence>
+      <element type="qes:doubleListType" name="xnhh" minOccurs="1"/>
+      <element type="qes:doubleListType" name="vnhh" minOccurs="0"/>
+    </sequence>
+  </complexType>
+
+
+<complexType name="scalmagsType"> 
+  <sequence>
+    <element type="qes:SiteMomentType" name="SiteMagnetization" minOccurs="1" maxOccurs="unbounded"/>
+  </sequence>
+  <attribute name="nat" type="integer"/>
+</complexType>
+<complexType name="d3magsType">
+  <sequence>
+    <element type="qes:SitMagType" name="SiteMagnetization" minOccurs="1" maxOccurs="unbounded"/>
+  </sequence>
+  <attribute type="integer" name="nat"/>
+</complexType> 
+
 
  <simpleType name="statusType">
       <restriction base="integer">
@@ -984,9 +1316,9 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
   <complexType name="matrixType">
     <simpleContent>
       <extension base="qes:doubleListType">
-        <attribute name="rank" type="positiveInteger" />
-        <attribute name="dims" type="qes:integerListType" />
-        <attribute name="order">
+        <attribute name="rank" type="positiveInteger" use="required"/>
+        <attribute name="dims" type="qes:integerListType" use="required"/>
+        <attribute name="order" use="optional">
           <simpleType>
             <restriction base="string">
               <enumeration value="F"/>
@@ -1019,7 +1351,42 @@ Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
     <simpleContent>
       <extension base="double">
         <attribute type="string" name="Units"/>
+        <!--attribute type="string" name="UNITS"/-->
       </extension>
     </simpleContent>
+  </complexType>
+   <complexType name="rism3dType">
+    <sequence>
+      <element type="integer" name="nmol" minOccurs="1"/>
+      <element type="string" name="molec_dir" minOccurs="0"/>
+      <element type="qes:solventType" name="solvent" minOccurs="1" maxOccurs="unbounded"/>
+      <element type="double" name="ecutsolv" minOccurs="1"/>
+    </sequence>
+  </complexType>
+  <complexType name="rismlaueType">
+    <sequence>
+      <element type="boolean" name="both_hands"  minOccurs="0"/>
+      <element type="integer" name="nfit"  minOccurs="0"/>
+      <element type="integer" name="pot_ref"  minOccurs="0"/>
+      <element type="double"  name="charge"  minOccurs="0"/>
+      <element type="double"  name="right_start"  minOccurs="0"/>
+      <element type="double"  name="right_expand"  minOccurs="0"/>
+      <element type="double"  name="right_buffer"  minOccurs="0"/>
+      <element type="double"  name="right_buffer_u"  minOccurs="0"/>
+      <element type="double"  name="right_buffer_v"  minOccurs="0"/>
+      <element type="double"  name="left_start"  minOccurs="0"/>
+      <element type="double"  name="left_expand"  minOccurs="0"/>
+      <element type="double"  name="left_buffer"  minOccurs="0"/>
+      <element type="double"  name="left_buffer_u"  minOccurs="0"/>
+      <element type="double"  name="left_buffer_v"  minOccurs="0"/>
+    </sequence>
+  </complexType> 
+  <complexType name="two_chemType">
+    <sequence>
+      <element type="boolean" name="twochem" default="true" minOccurs="1"/> 
+      <element type="integer" name="nbnd_cond" minOccurs="1"/>
+      <element type="double" name="degauss_cond" minOccurs="1"/>
+      <element type="integer" name="nelec_cond" minOccurs="1"/> 
+    </sequence>
   </complexType>
 </schema>
