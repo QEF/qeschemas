@@ -1,15 +1,16 @@
 <?xml version="1.0"?>
 <!--
-Copyright (c), 2015-2016, Quantum Espresso Foundation. All rights reserved.
+Copyright (c), 2021-2024, Quantum Espresso Foundation. All rights reserved.
 This file is distributed under the terms of the MIT License. See the
 file 'LICENSE' in the root directory of the present distribution, or
 http://opensource.org/licenses/MIT.
 Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
-datecode 220603
+datecode 241104
 -->
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
 	xmlns:qes="http://www.quantum-espresso.org/ns/qes/qes-1.0"
-	targetNamespace="http://www.quantum-espresso.org/ns/qes/qes-1.0">
+	targetNamespace="http://www.quantum-espresso.org/ns/qes/qes-1.0"
+        version= "241015">
   <!-- ESPRESSO (root element) -->
   <element name="espresso" type="qes:espressoType" />
   <complexType name="espressoType">
@@ -76,6 +77,7 @@ datecode 220603
       <element type="qes:electric_fieldType" name="electric_field" minOccurs="0" />
       <element type="qes:atomic_constraintsType" name="atomic_constraints" minOccurs="0" />
       <element type="qes:spin_constraintsType" name="spin_constraints" minOccurs="0" />
+      <element type="qes:two_chemType" name="twoch_" minOccurs="0"/> 
     </sequence>
   </complexType>
   <!-- STEP TYPE -->
@@ -112,6 +114,7 @@ datecode 220603
       <element type="double"  name="fcp_tot_charge" minOccurs="0"/>
       <element type="qes:rism3dType" name="rism3d" minOccurs="0" />
       <element type="qes:rismlaueType" name="rismlaue" minOccurs="0" />
+      <element type="qes:two_chemType" name="two_chem" minOccurs="0"/> 
     </sequence>
   </complexType>
   <!-- Timing Info -->
@@ -201,6 +204,11 @@ datecode 220603
   	<restriction base="string">
   	  <enumeration value="low"/>
   	  <enumeration value="high"/>
+      <enumeration value="medium"/>
+      <enumeration value="minimum"/>
+      <enumeration value="debug"/>
+      <enumeration value="none"/>
+      <enumeration value="nowf"/>
   	</restriction>
   </simpleType>
   <!-- INPUT TYPE -->
@@ -231,6 +239,7 @@ datecode 220603
       <element type="qes:cellType" name="cell"/>
     </sequence>
     <attribute type="positiveInteger" name="nat" />
+    <attribute type="integer" name = "num_of_atomic_wfc" use="optional"/>
     <attribute type="double" name="alat" use="optional"/>
     <attribute type="positiveInteger" name="bravais_index" use="optional"/>
       <attribute type="string" name="alternative_axes" use="optional" />
@@ -297,6 +306,7 @@ datecode 220603
     <pattern value="[vV][dD][wW]-[dD][fF]2-[cC]09"/>
     <pattern value="[vV][dD][wW]-[dD][fF]2-[bB]86[rR]"/>
     <pattern value="[rR][vV][vV]10"/>
+    <pattern value="[rR][sS][cC][aA][nN]"/>
     <pattern value="[bB][eE][eE][fF]"/>
     <pattern value="[sS][Cc][Aa][nN]"/> 
     <pattern value="[rR]2[sS][cC][aA][nN]"/> 
@@ -335,6 +345,7 @@ datecode 220603
   <complexType name="dftUType">
     <sequence>
       <element type="unsignedByte" name="lda_plus_u_kind" minOccurs="0"/>
+      <element type="qes:HubbardOccType" name="Hubbard_Occ" minOccurs="0" maxOccurs="unbounded"/>
       <element type="qes:HubbardCommonType" name="Hubbard_U" minOccurs="0" maxOccurs="unbounded"/>
       <element type="qes:HubbardCommonType" name="Hubbard_J0" minOccurs="0" maxOccurs="unbounded"/>
       <element type="qes:HubbardCommonType" name="Hubbard_alpha" minOccurs="0" maxOccurs="unbounded"/>
@@ -348,6 +359,7 @@ datecode 220603
       <element type="qes:HubbardCommonType" name="Hubbard_alpha_back" minOccurs="0" maxOccurs="unbounded"/>
       <element type="qes:Hubbard_nsType" name="Hubbard_ns_nc" minOccurs="0" maxOccurs="unbounded"/>
     </sequence>
+    <attribute type="boolean" name="new_format"/>
   </complexType>
   <complexType name="HubbardCommonType">
     <simpleContent>
@@ -386,6 +398,20 @@ datecode 220603
       </extension>
     </simpleContent>
   </complexType>
+  <complexType name="ChannelOccType">
+    <simpleContent>
+      <extension base="qes:HubbardCommonType">
+        <attribute type="integer" name="index" use="required" />
+      </extension>
+    </simpleContent>
+  </complexType>
+  <complexType name="HubbardOccType">
+    <sequence>
+      <element type="qes:ChannelOccType" name="channel_occ" minOccurs="1" maxOccurs="3"/>
+    </sequence>
+    <attribute type="positiveInteger" name="channels" use="required" />
+    <attribute type="string" name="specie" use="required"/> 
+  </complexType>
   <complexType name="SitMagType">
     <simpleContent>
       <extension base="qes:d3vectorType">
@@ -421,17 +447,20 @@ datecode 220603
         <enumeration value="norm-atomic"/>
         <enumeration value="pseudo"/>
         <enumeration value="file"/>
+        <enumeration value="wf"/>
+        <enumeration value="wannier"/>
      </restriction>
   </simpleType>
   <complexType name="HubbardBackType">
     <sequence>
       <element type="double" name="Hubbard_U2" minOccurs="1" maxOccurs="1" />
-			<element type="positiveInteger" name="n2_number" minOccurs="1" maxOccurs="1"/>
+      <element type="positiveInteger" name="n2_number" minOccurs="1" maxOccurs="1"/>
       <element type="positiveInteger" name="l2_number" minOccurs="1" maxOccurs="1"/>
       <element type="positiveInteger" name="n3_number" minOccurs="0" maxOccurs="1"/>
       <element type="positiveInteger" name="l3_number" minOccurs="0" maxOccurs="1"/>
     </sequence>
     <attribute type="qes:backrestrType" name="background" use="required"/>
+    <attribute type='string' name="label"/> 
     <attribute type="string" name="species"/>
   </complexType>
   <simpleType name="backrestrType">
@@ -544,6 +573,7 @@ datecode 220603
       <element type="double" name="conv_thr"/>
       <element type="positiveInteger" name="mixing_ndim"/>
       <element type="positiveInteger" name="max_nstep"/>
+      <element type="positiveInteger" name="exx_nstep" minOccurs="0"/> 
       <element type="boolean" name="real_space_q" minOccurs="0" default="false" />
       <element type="boolean" name="real_space_beta" minOccurs="0" default ="false"/>
       <element type="boolean" name="tq_smoothing"/>
@@ -851,7 +881,7 @@ datecode 220603
      <sequence>
         <element type="qes:constr_parms_listType" name="constr_parms" />
         <element type="qes:constr_typeType" name="constr_type"/>
-        <element type="double"  name="constr_target" />
+        <element type="double"  name="constr_target" minOccurs="0"/>
      </sequence>
   </complexType>
   <simpleType name="constr_parms_listType">
@@ -859,7 +889,8 @@ datecode 220603
        <simpleType>
          <list itemType="double"/>
        </simpleType>
-       <length value="4"/>
+       <minLength value="2"/>
+       <maxLength value="4"/> 
     </restriction>
   </simpleType>
 
@@ -871,6 +902,7 @@ datecode 220603
         <enumeration value="planar_angle"/>
         <enumeration value="torsional_angle"/>
         <enumeration value="bennet_proj"/>
+	<enumeration value="potential_wall"/> 
      </restriction>
   </simpleType>
 
@@ -889,6 +921,7 @@ datecode 220603
     <sequence>
       <element name="BerryPhase" type="qes:BerryPhaseOutputType" minOccurs="0"/>
       <element name="finiteElectricFieldInfo" type="qes:finiteFieldOutType" minOccurs="0" />
+      <element name="sawtoothEnergy" type="qes:sawtoothEnergyType" minOccurs="0"/>
       <element name="dipoleInfo" type="qes:dipoleOutputType" minOccurs="0" />
       <element name="gateInfo" type="qes:gateInfoType" minOccurs="0" maxOccurs="1"/>
     </sequence>
@@ -900,6 +933,17 @@ datecode 220603
       <element name="ionicPolarization" type="qes:ionicPolarizationType" maxOccurs="unbounded"/>
       <element name="electronicPolarization" type="qes:electronicPolarizationType" maxOccurs="unbounded"/>
     </sequence>
+  </complexType>
+
+  <complexType name="sawtoothEnergyType">
+    <simpleContent>
+      <extension base="double">
+        <attribute type="double"  name="eamp"/>
+        <attribute type="double"  name="eopreg"/>
+        <attribute type="double"  name="emaxpos"/>
+	<attribute type="integer" name="edir"/> 
+      </extension>
+    </simpleContent>
   </complexType>
 
   <complexType name="dipoleOutputType">
@@ -972,6 +1016,8 @@ datecode 220603
     <sequence>
       <element type="qes:scf_convType" name="scf_conv"/>
       <element type="qes:opt_convType" name="opt_conv" minOccurs="0"/>
+      <!-- element optional for back-compatibility but always present--> 
+      <element type="boolean" name="wf_collected" minOccurs="0"/> 
     </sequence>
   </complexType>
   <complexType name="scf_convType">
@@ -999,6 +1045,7 @@ datecode 220603
   <complexType name="symmetriesType">
     <sequence>
       <element type="unsignedByte" name="nsym"/>
+      <element type="integer" name="colin_mag" minOccurs="0"/>
       <element type="unsignedByte" name="nrot"/>
       <element type="unsignedByte" name="space_group"/>
       <element type="qes:symmetryType" name="symmetry" maxOccurs="48" minOccurs="1"/>
@@ -1031,6 +1078,7 @@ datecode 220603
   <complexType name="outputPBCType">
     <sequence>
       <element type="string" name="assume_isolated"/>
+      <element type="qes:esmType" name="esm" minOccurs = "0"/>
     </sequence>
   </complexType>
   <complexType name="magnetizationType">
@@ -1076,8 +1124,11 @@ datecode 220603
       <element type="nonNegativeInteger" name="nbnd_up" minOccurs="0" />
       <element type="nonNegativeInteger" name="nbnd_dw" minOccurs="0" />
       <element type="double" name="nelec"/>
+      <!-- wf_collected and num_of_atomic_wfc are kept as optional for back-compatibility but never more used, 
+        they are removed from the fortran type to work around a bug of Intel <21.0.3 
+        comment the 2 lines below before building the qes_modules-->  
       <element type="integer" name = "num_of_atomic_wfc" minOccurs = "0"/>
-      <element type="boolean" name = "wf_collected" />
+      <element type="boolean" name = "wf_collected" minOccurs="0"/>
       <element type="double" name="fermi_energy" minOccurs="0" />
       <element type="double" name="highestOccupiedLevel" minOccurs ="0"/>
       <element type="double" name="lowestUnoccupiedLevel" minOccurs="0"/>
@@ -1342,4 +1393,13 @@ datecode 220603
       <element type="double"  name="left_buffer_v"  minOccurs="0"/>
     </sequence>
   </complexType> 
+  <complexType name="two_chemType">
+    <sequence>
+      <element type="boolean" name="twochem" default="true" minOccurs="1"/> 
+      <element type="integer" name="nbnd_cond" minOccurs="1"/>
+      <element type="double" name="degauss_cond" minOccurs="1"/>
+      <element type="double" name="nelec_cond" minOccurs="1"/> 
+      <element type="double" name="ef_cond" minOccurs="0"/>
+    </sequence>
+  </complexType>
 </schema>
