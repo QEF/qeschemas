@@ -413,10 +413,11 @@ datecode 250412
   </complexType>
   <complexType name="HubbardMType">
     <simpleContent>
-      <extension base="qes:integerVectorType">
+      <extension base="qes:vectorType">
         <attribute type="string" name="specie"/>
         <attribute type="string"  name="label"/> 
-        <attribute type="double" name="value"/> 
+        <attribute type="positiveInteger" name ="spin"/>
+        <attribute type="double" name="jjj"/>
       </extension> 
     </simpleContent>
   </complexType>
