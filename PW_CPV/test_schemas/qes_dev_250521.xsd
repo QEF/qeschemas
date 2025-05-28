@@ -453,6 +453,16 @@ datecode 250412
       </extension>
     </simpleContent>
   </complexType>
+  <complexType name="orderUmType">
+    <simpleContent>
+      <extension base="qes:integerVectorType">
+        <attribute type="string" name="specie"/>
+        <attribute type="string" name="label"/>
+        <attribute type="positiveInteger" name="spin"/>
+        <attribute type="positiveInteger" name="atomidx"/>
+      </extension>
+    </simpleContent>
+  </complexType>
   <complexType name="Hubbard_nsType">
     <simpleContent>
       <extension base="qes:matrixType">
