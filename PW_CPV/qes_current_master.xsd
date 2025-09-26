@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
 <!--
-Copyright (c), 2021-2024, Quantum Espresso Foundation. All rights reserved.
+Copyright (c), 2025-2029, Quantum Espresso Foundation. All rights reserved.
 This file is distributed under the terms of the MIT License. See the
 file 'LICENSE' in the root directory of the present distribution, or
 http://opensource.org/licenses/MIT.
 Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
-datecode 241104
+datecode 250521
 -->
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
 	xmlns:qes="http://www.quantum-espresso.org/ns/qes/qes-1.0"
 	targetNamespace="http://www.quantum-espresso.org/ns/qes/qes-1.0"
-        version= "241104">
+        version= "250521">
   <!-- ESPRESSO (root element) -->
   <element name="espresso" type="qes:espressoType" />
   <complexType name="espressoType">
@@ -311,6 +311,9 @@ datecode 241104
     <pattern value="[sS][Cc][Aa][nN]"/> 
     <pattern value="[rR]2[sS][cC][aA][nN]"/> 
     <pattern value="[A-Z]{2,4}\p{Zs}{1,3}[A-Z]{1,4}\p{Zs}{1,3}[A-Z]{1,4}\p{Zs}{1,4}[A-Z]{1,4}"/>
+    <pattern value="[A-Z]{2,4}\+[A-Z]{1,4}\+[A-Z]{1,4}\+[A-Z]{1,4}"/>
+    <pattern value="[A-Z]{2,4}\+[A-Z]{1,4}\+Q2DX\+Q2DC"/> 
+    <pattern value="[pP][bB][eE][qQ]2[dD]"/>
     <pattern value=".*[xX][cC]_[lL][Dd][Aa]_[xX][cC]?_.*"/>
     <pattern value=".*[xX][cC]_[mM]?[gG][Gg][Aa]_[xX][cC]?_.*"/>
     <pattern value=".*[xX][cC]_[hH][yY][bB]_[mM]?[gG][Gg][Aa]_[xX][cC]?_.*"/>
@@ -318,6 +321,17 @@ datecode 241104
     <pattern value=".*[xX][cC]_[mM]?[gG][Gg][Aa]_[kKcC]_.*"/>
     <pattern value=".*[xX][cC]_[hH][yY][bB]_[mM]?[gG][Gg][Aa]_[kKcC]?_.*"/>
     <pattern value="XC(-[0-9][0-9][0-9][iL]){6}"/>
+    <pattern value="[nB]86[nB][pP][bB][eE]"/>
+    <pattern value="[bB][eE][eE][fF]\-[vV][dD][wW]"/>
+    <pattern value="[gG][aA][uU][pP]"/>
+    <pattern value="[oO][pP][tT]86[bB]"/>
+    <pattern value="[oO][pP][tT][bB]86[bB]"/>
+    <pattern value="[oO][pP][tT][[bB]kK]88"></pattern>
+    <pattern value="[pP][wW]86[pP][bB][eE]"/>
+    <pattern value="[tT][pP][sS][sS]"/>
+    <pattern value="[vV][dD][wW]-[dD][fF]3-[oO][pP][tT]1"/>
+    <pattern value="[vV][dD][wW]-[dD][fF]3-[oO][pP][tT]2"/>
+    <pattern value="[xX]3[lL][yY][pP]"/>
     </restriction>
   </simpleType>
 
@@ -347,6 +361,7 @@ datecode 241104
       <element type="unsignedByte" name="lda_plus_u_kind" minOccurs="0"/>
       <element type="qes:HubbardOccType" name="Hubbard_Occ" minOccurs="0" maxOccurs="unbounded"/>
       <element type="qes:HubbardCommonType" name="Hubbard_U" minOccurs="0" maxOccurs="unbounded"/>
+      <element type="qes:HubbardMType" name="Hubbard_Um" minOccurs="0" maxOccurs="unbounded"/>
       <element type="qes:HubbardCommonType" name="Hubbard_J0" minOccurs="0" maxOccurs="unbounded"/>
       <element type="qes:HubbardCommonType" name="Hubbard_alpha" minOccurs="0" maxOccurs="unbounded"/>
       <element type="qes:HubbardCommonType" name="Hubbard_beta" minOccurs="0" maxOccurs="unbounded"/>
@@ -354,6 +369,7 @@ datecode 241104
       <element type="qes:starting_nsType" name="starting_ns" minOccurs="0" maxOccurs="unbounded"/>
       <element type="qes:HubbardInterSpecieVType" name="Hubbard_V" minOccurs="0" maxOccurs="unbounded"/> 
       <element type="qes:Hubbard_nsType" name="Hubbard_ns" minOccurs="0" maxOccurs="unbounded"/>
+      <element type="qes:orderUmType" name="Hub_m_order" minOccurs="0" maxOccurs="unbounded"/>
       <element type="qes:HubbardProjType" name="U_projection_type" minOccurs="0"/>
       <element type="qes:HubbardBackType"  name="Hubbard_back"  minOccurs="0" maxOccurs="unbounded"/>
       <element type="qes:HubbardCommonType" name="Hubbard_alpha_back" minOccurs="0" maxOccurs="unbounded"/>
@@ -398,6 +414,16 @@ datecode 241104
       </extension>
     </simpleContent>
   </complexType>
+  <complexType name="HubbardMType">
+    <simpleContent>
+      <extension base="qes:vectorType">
+        <attribute type="string" name="specie"/>
+        <attribute type="string"  name="label"/> 
+        <attribute type="positiveInteger" name ="spin"/>
+        <attribute type="double" name="jjj"/>
+      </extension> 
+    </simpleContent>
+  </complexType>
   <complexType name="ChannelOccType">
     <simpleContent>
       <extension base="qes:HubbardCommonType">
@@ -430,6 +456,16 @@ datecode 241104
       </extension>
     </simpleContent>
   </complexType>
+  <complexType name="orderUmType">
+    <simpleContent>
+      <extension base="qes:integerVectorType">
+        <attribute type="string" name="specie"/>
+        <attribute type="string" name="label"/>
+        <attribute type="positiveInteger" name="spin"/>
+        <attribute type="positiveInteger" name="atomidx"/>
+      </extension>
+    </simpleContent>
+  </complexType>
   <complexType name="Hubbard_nsType">
     <simpleContent>
       <extension base="qes:matrixType">
@@ -455,9 +491,9 @@ datecode 241104
     <sequence>
       <element type="double" name="Hubbard_U2" minOccurs="1" maxOccurs="1" />
       <element type="positiveInteger" name="n2_number" minOccurs="1" maxOccurs="1"/>
-      <element type="positiveInteger" name="l2_number" minOccurs="1" maxOccurs="1"/>
+      <element type="nonNegativeInteger" name="l2_number" minOccurs="1" maxOccurs="1"/>
       <element type="positiveInteger" name="n3_number" minOccurs="0" maxOccurs="1"/>
-      <element type="positiveInteger" name="l3_number" minOccurs="0" maxOccurs="1"/>
+      <element type="nonNegativeInteger" name="l3_number" minOccurs="0" maxOccurs="1"/>
     </sequence>
     <attribute type="qes:backrestrType" name="background" use="required"/>
     <attribute type='string' name="label"/> 
