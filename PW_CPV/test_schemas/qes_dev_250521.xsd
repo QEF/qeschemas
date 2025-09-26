@@ -5,12 +5,12 @@ This file is distributed under the terms of the MIT License. See the
 file 'LICENSE' in the root directory of the present distribution, or
 http://opensource.org/licenses/MIT.
 Authors: Antonio Zambon, Paolo Giannozzi, Pietro Delugas
-datecode 250412
+datecode 250521
 -->
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
 	xmlns:qes="http://www.quantum-espresso.org/ns/qes/qes-1.0"
 	targetNamespace="http://www.quantum-espresso.org/ns/qes/qes-1.0"
-        version= "250412">
+        version= "250521">
   <!-- ESPRESSO (root element) -->
   <element name="espresso" type="qes:espressoType" />
   <complexType name="espressoType">
@@ -325,6 +325,8 @@ datecode 250412
     <pattern value="[bB][eE][eE][fF]\-[vV][dD][wW]"/>
     <pattern value="[gG][aA][uU][pP]"/>
     <pattern value="[oO][pP][tT]86[bB]"/>
+    <pattern value="[oO][pP][tT][bB]86[bB]"/>
+    <pattern value="[oO][pP][tT][[bB]kK]88"></pattern>
     <pattern value="[pP][wW]86[pP][bB][eE]"/>
     <pattern value="[tT][pP][sS][sS]"/>
     <pattern value="[vV][dD][wW]-[dD][fF]3-[oO][pP][tT]1"/>
