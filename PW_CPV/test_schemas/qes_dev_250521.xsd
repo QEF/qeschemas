@@ -367,6 +367,7 @@ datecode 250412
       <element type="qes:starting_nsType" name="starting_ns" minOccurs="0" maxOccurs="unbounded"/>
       <element type="qes:HubbardInterSpecieVType" name="Hubbard_V" minOccurs="0" maxOccurs="unbounded"/> 
       <element type="qes:Hubbard_nsType" name="Hubbard_ns" minOccurs="0" maxOccurs="unbounded"/>
+      <element type="qes:orderUmType" name="Hub_m_order" minOccurs="0" maxOccurs="unbounded"/>
       <element type="qes:HubbardProjType" name="U_projection_type" minOccurs="0"/>
       <element type="qes:HubbardBackType"  name="Hubbard_back"  minOccurs="0" maxOccurs="unbounded"/>
       <element type="qes:HubbardCommonType" name="Hubbard_alpha_back" minOccurs="0" maxOccurs="unbounded"/>
