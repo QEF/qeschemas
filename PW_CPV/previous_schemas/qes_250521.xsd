@@ -326,7 +326,7 @@ datecode 250521
     <pattern value="[gG][aA][uU][pP]"/>
     <pattern value="[oO][pP][tT]86[bB]"/>
     <pattern value="[oO][pP][tT][bB]86[bB]"/>
-    <pattern value="[oO][pP][tT][[bB]kK]88"></pattern>
+    <pattern value="[oO][pP][tT][bB][kK]88"></pattern>
     <pattern value="[pP][wW]86[pP][bB][eE]"/>
     <pattern value="[tT][pP][sS][sS]"/>
     <pattern value="[vV][dD][wW]-[dD][fF]3-[oO][pP][tT]1"/>
