@@ -1,0 +1,31 @@
+---
+# Updates web page on pushes to `master`
+name: webpage
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  webpage:
+    if: github.repository == 'unkcpz/qeschemas' # XXX: change to QEF/qeschemas after fixed
+
+    runs-on: ubuntu-latest
+    env:
+      COMMIT_AUTHOR: Deploy Action
+      COMMIT_AUTHOR_EMAIL: action@github.com
+    steps:
+    - uses: actions/checkout@v2
+    - run: git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
+    - name: Install xsltproc
+      run: sudo apt-get install -f xsltproc
+    - name: make pages
+      run: ./.make_ghpages/generate.sh
+    - name: update index.html
+      run: cp ./.make_ghpages/index.html out/
+    - name: Deploy 🚀
+      uses: JamesIves/github-pages-deploy-action@4.1.1
+      with:
+        branch: gh-pages # The branch the action should deploy to.
+        folder: out # The folder the action should deploy.
